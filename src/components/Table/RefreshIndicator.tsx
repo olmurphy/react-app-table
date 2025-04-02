@@ -23,9 +23,8 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'flex-end',
-        gap: 0.5,
         color: 'text.secondary',
         cursor: 'pointer',
         '&:hover': {
@@ -35,21 +34,21 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
       onClick={onRefresh}
       role="button"
       tabIndex={0}
-      onKeyPress={(e) => {
+      onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           onRefresh();
         }
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+      <div style={{ display: 'flex', alignItems: 'right', flexDirection: "column", gap: 0.5 }}>
         <Typography variant="caption" component="span" sx={{ fontSize: '0.75rem' }}>
           Last updated
         </Typography>
-        <RefreshIcon sx={{ fontSize: '0.875rem' }} />
-      </Box>
-      <Typography variant="caption" component="span" sx={{ fontSize: '0.75rem' }}>
+        <Typography variant="caption" component="span" sx={{ fontSize: '0.75rem' }}>
         {formatTimeAgo()}
       </Typography>
+      </div>
+      <RefreshIcon />
     </Box>
   );
 }; 
