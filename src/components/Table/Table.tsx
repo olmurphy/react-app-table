@@ -16,40 +16,10 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyledTableContainer } from "./styles/tableStyles";
+import { Column, Order, SearchFilter, SortState } from "./Table.types";
 import { TableFooter } from "./TableFooter/TableFooter";
 import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { TableHeader } from "./TableHeader/TableHeader";
-
-
-// Define the data types for better type safety
-export interface Column<T> {
-  id: keyof T;
-  label: string;
-  sortable?: boolean;
-  filterable?: boolean;
-  render?: (value: T[keyof T], row: T) => React.ReactNode;
-  width?: string;
-  align?: "left" | "right" | "center";
-  editable?: boolean;
-  sticky?: boolean;
-  type?: "number" | "string" | "date" | "select" | "boolean";
-  disabledPadding?: boolean;
-  options?: string[]; // for select
-}
-
-export type Order = "asc" | "desc";
-
-type FilterValue = string | number | boolean | string[];
-
-interface SortState<T> {
-  orderBy: keyof T;
-  order: Order;
-}
-
-interface SearchFilter<T> {
-  column: keyof T;
-  value: string;
-}
 
 interface SearchFilterDropdownProps<T> {
   anchorEl: HTMLElement | null;
@@ -607,8 +577,6 @@ export function CustomTable<T extends Record<string, any>>({
   );
 }
 
-
-
 // export function Table<T extends Record<string, any>>(props: TableProps<T>) {
 //   const {
 //     data,
@@ -637,7 +605,7 @@ export function CustomTable<T extends Record<string, any>>({
 //         <SearchBar />
 //         <FilterChips />
 //         <StyledTableContainer>
-//           <TableHeader 
+//           <TableHeader
 //             onRequestSort={handleRequestSort}
 //             sortState={sortState}
 //           />
@@ -649,8 +617,7 @@ export function CustomTable<T extends Record<string, any>>({
 //   );
 // }
 
-
-// export function CustomTable<T extends Record<string, any>>({ 
+// export function CustomTable<T extends Record<string, any>>({
 //   tableName,
 //   data,
 //   columns,
