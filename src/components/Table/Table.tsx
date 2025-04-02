@@ -2,9 +2,17 @@ import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
+import Chip from "@mui/material/Chip";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 import InputBase from "@mui/material/InputBase";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
 import { alpha, styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -20,14 +28,6 @@ import Typography from "@mui/material/Typography";
 import visuallyHidden from "@mui/utils/visuallyHidden";
 import { RefreshIndicator } from "@src/components/Table/RefreshIndicator";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Chip from "@mui/material/Chip";
-import Paper from "@mui/material/Paper";
-import Popper from "@mui/material/Popper";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemButton from "@mui/material/ListItemButton";
 
 const ResizeHandle = styled("div")(({ theme }) => ({
   position: "absolute",
@@ -86,7 +86,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   "& .MuiTableHead-root": {
     position: "sticky",
     top: 0,
-    zIndex: 2,
+    zIndex: 1,
     backgroundColor: theme.palette.background.paper,
 
     "& .MuiTableCell-root": {
@@ -115,7 +115,7 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
     position: "sticky",
     bottom: 0,
     backgroundColor: theme.palette.background.paper,
-    zIndex: 2,
+    zIndex: 1,
   },
 }));
 
@@ -157,30 +157,44 @@ interface SearchFilterDropdownProps<T> {
   searchTerm: string;
 }
 
-function SearchFilterDropdown<T>({ anchorEl, onClose, columns, onFilterSelect, searchTerm }: SearchFilterDropdownProps<T>) {
+function SearchFilterDropdown<T>({
+  anchorEl,
+  onClose,
+  columns,
+  onFilterSelect,
+  searchTerm,
+}: SearchFilterDropdownProps<T>) {
   const open = Boolean(anchorEl);
-  const id = open ? 'search-filter-popper' : undefined;
+  const id = open ? "search-filter-popper" : undefined;
 
-  const filteredColumns = columns.filter(column => 
-    column.filterable !== false && 
-    column.label.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredColumns = columns.filter(
+    (column) => column.filterable !== false && column.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  useEffect(() => {
+    console.log({
+      anchorEl,
+      onClose,
+      columns,
+      onFilterSelect,
+      searchTerm,
+    });
+  }, [anchorEl, onClose, columns, onFilterSelect, searchTerm]);
+
   return (
-    <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start">
+    <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start" sx={{ zIndex: 2 }}>
       <ClickAwayListener onClickAway={onClose}>
-        <Paper sx={{ width: 300, maxHeight: 400, overflow: 'auto' }}>
+        <Paper sx={{ width: 300, maxHeight: 400, overflow: "auto" }}>
           <List>
             {filteredColumns.map((column) => (
               <ListItem key={String(column.id)} disablePadding>
-                <ListItemButton onClick={() => {
-                  onFilterSelect(column.id);
-                  onClose();
-                }}>
-                  <ListItemText 
-                    primary={column.label}
-                    secondary={`Filter by ${column.label.toLowerCase()}`}
-                  />
+                <ListItemButton
+                  onClick={() => {
+                    onFilterSelect(column.id);
+                    onClose();
+                  }}
+                >
+                  <ListItemText primary={column.label} secondary={`Filter by ${column.label.toLowerCase()}`} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -544,10 +558,6 @@ export function CustomTable<T extends Record<string, any>>({
       .slice((page - 1) * pageSize, page * pageSize);
   }, [data, filters, sortState.order, sortState.orderBy, isServerSide, page, pageSize]);
 
-  useEffect(() => {
-    console.log(sortState);
-  }, [sortState]);
-
   // Handle filter change
   const handleFilterChangeLocal = useCallback(
     (property: keyof T, value: string | number | boolean | string[]) => {
@@ -652,10 +662,6 @@ export function CustomTable<T extends Record<string, any>>({
     };
   }, [debouncedSortChange]);
 
-  useEffect(() => {
-    console.log(sortState);
-  }, [sortState]);
-
   const handleRequestSort = (_: React.MouseEvent<unknown>, property: keyof T) => {
     console.log("inside of handleRequestSort");
     const isAsc = sortState.orderBy === property && sortState.order === "asc";
@@ -665,38 +671,32 @@ export function CustomTable<T extends Record<string, any>>({
     });
   };
 
-  const handleSearchFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleSearchFocus = (event: React.MouseEvent<HTMLInputElement>) => {
     setSearchAnchorEl(event.currentTarget);
   };
 
-  const handleSearchBlur = () => {
-    // Small delay to allow click events to fire
-    setTimeout(() => {
-      setSearchAnchorEl(null);
-    }, 200);
-  };
 
   const handleFilterSelect = (column: keyof T) => {
     setCurrentFilterColumn(column);
-    const columnLabel = columns.find(c => c.id === column)?.label || String(column);
+    const columnLabel = columns.find((c) => c.id === column)?.label || String(column);
     setSearchTerm(`${columnLabel} = `);
   };
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      const value = searchTerm.split(' = ')[1]?.trim();
+    if (event.key === "Enter") {
+      const value = searchTerm.split(" = ")[1]?.trim();
       if (value && currentFilterColumn) {
-        setActiveFilters(prev => [...prev, { column: currentFilterColumn, value }]);
+        setActiveFilters((prev) => [...prev, { column: currentFilterColumn, value }]);
         handleFilterChangeLocal(currentFilterColumn, value);
-        setSearchTerm('');
+        setSearchTerm("");
         setCurrentFilterColumn(null);
       }
     }
   };
 
   const handleRemoveFilter = (filter: SearchFilter) => {
-    setActiveFilters(prev => prev.filter(f => f !== filter));
-    handleFilterChangeLocal(filter.column, '');
+    setActiveFilters((prev) => prev.filter((f) => f !== filter));
+    handleFilterChangeLocal(filter.column, "");
   };
 
   const handleClearFilters = () => {
@@ -751,8 +751,8 @@ export function CustomTable<T extends Record<string, any>>({
             placeholder="Search…"
             value={searchTerm}
             onChange={handleSearchChange}
-            onFocus={handleSearchFocus}
-            onBlur={handleSearchBlur}
+            onClick={handleSearchFocus}
+            // onBlur={handleSearchBlur}
             onKeyDown={handleSearchKeyDown}
             sx={(theme) => ({
               width: "100%",
@@ -779,22 +779,19 @@ export function CustomTable<T extends Record<string, any>>({
           />
         </Box>
         {activeFilters.length > 0 && (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             {activeFilters.map((filter, index) => (
               <Chip
                 key={index}
-                label={`${columns.find(c => c.id === filter.column)?.label || String(filter.column)} = ${filter.value}`}
+                label={`${columns.find((c) => c.id === filter.column)?.label || String(filter.column)} = ${
+                  filter.value
+                }`}
                 onDelete={() => handleRemoveFilter(filter)}
                 color="primary"
                 variant="outlined"
               />
             ))}
-            <Chip
-              label="Clear filters"
-              onClick={handleClearFilters}
-              color="default"
-              variant="outlined"
-            />
+            <Chip label="Clear filters" onClick={handleClearFilters} color="default" variant="outlined" />
           </Box>
         )}
       </Box>
@@ -816,8 +813,6 @@ export function CustomTable<T extends Record<string, any>>({
               {processedData.map((row, index) => {
                 const isItemSelected = selected.includes(row);
                 const labelId = `enhanced-table-checkbox-${index}`;
-
-                console.log("isItemSelected", isItemSelected);
 
                 return (
                   <TableRow
