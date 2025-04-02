@@ -92,8 +92,7 @@ if (!global.BROWSER) {
   EadpaUi.appConfig = require("../appConfig").default;
 }
 
-if (global.BROWSER) {
-  console.log("this is run in browser");
+if (global.BROWSER) { // this is run in browser
   const { initWebVitals } = require("../utils/performance");
   initWebVitals();
 }

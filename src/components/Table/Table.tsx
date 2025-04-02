@@ -1,6 +1,5 @@
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import Chip from "@mui/material/Chip";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
@@ -8,136 +7,19 @@ import InputBase from "@mui/material/InputBase";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Paper from "@mui/material/Paper";
 import Popper from "@mui/material/Popper";
-import { alpha, styled } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableFooter from "@mui/material/TableFooter";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import visuallyHidden from "@mui/utils/visuallyHidden";
-import { RefreshIndicator } from "@src/components/Table/RefreshIndicator";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { StyledTableContainer } from "./styles/tableStyles";
+import { TableFooter } from "./TableFooter/TableFooter";
+import { TableToolbar } from "./TableHeader/HeaderToolbar";
+import { TableHeader } from "./TableHeader/TableHeader";
 
-
-// export function CustomTable<T extends Record<string, any>>(props: TableProps<T>) {
-//   return (
-//     <TableProvider<T> {...props}>
-//       <Box>
-//         <TableToolbar />
-//         <TableSearch />
-//         <TableFilters />
-//         <StyledTableContainer>
-//           <Table>
-//             <TableHeader />
-//             <TableBody />
-//             <TableFooter />
-//           </Table>
-//         </StyledTableContainer>
-//       </Box>
-//     </TableProvider>
-//   );
-// }
-
-const ResizeHandle = styled("div")(({ theme }) => ({
-  position: "absolute",
-  right: 0,
-  top: "10px",
-  bottom: "10px",
-  width: "2px",
-  background: theme.palette.border.main,
-  cursor: "col-resize",
-  userSelect: "none",
-  touchAction: "none",
-  "&:hover": {
-    background: theme.palette.border.dark,
-  },
-  "&:active": {
-    background: theme.palette.primary.main,
-  },
-}));
-
-// Add themed table styles
-const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
-  boxShadow:
-    theme.palette.mode === "light"
-      ? "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)"
-      : "0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3)",
-  maxHeight: "900px",
-  maxWidth: "100%",
-  display: "flex",
-  flexDirection: "column",
-
-  "& .MuiTableRow-root": {
-    "&:hover": {
-      backgroundColor:
-        theme.palette.mode === "light"
-          ? alpha(theme.palette.primary.main, 0.04)
-          : alpha(theme.palette.primary.main, 0.08),
-    },
-    "&.Mui-selected": {
-      backgroundColor:
-        theme.palette.mode === "light"
-          ? alpha(theme.palette.primary.main, 0.08)
-          : alpha(theme.palette.primary.main, 0.16),
-      "&:hover": {
-        backgroundColor:
-          theme.palette.mode === "light"
-            ? alpha(theme.palette.primary.main, 0.12)
-            : alpha(theme.palette.primary.main, 0.24),
-      },
-    },
-  },
-  "& .MuiTableCell-root": {
-    borderColor: theme.palette.border.light,
-  },
-  "& .MuiTableHead-root": {
-    position: "sticky",
-    top: 0,
-    zIndex: 1,
-    backgroundColor: theme.palette.background.paper,
-
-    "& .MuiTableCell-root": {
-      backgroundColor:
-        theme.palette.mode === "light"
-          ? alpha(theme.palette.primary.main, 0.02)
-          : alpha(theme.palette.primary.main, 0.03),
-      color: theme.palette.text.primary,
-      fontWeight: 600,
-      fontSize: "0.875rem",
-      height: "32px",
-      padding: "4px 8px",
-    },
-  },
-  "& .MuiTableBody-root": {
-    "& .MuiTableRow-root": {
-      height: "36px", // Reduced row height
-      "& .MuiTableCell-root": {
-        padding: "4px 8px", // Reduced padding
-      },
-    },
-  },
-
-  // Fixed footer
-  "& .MuiTableFooter-root": {
-    position: "sticky",
-    bottom: 0,
-    backgroundColor: theme.palette.background.paper,
-    zIndex: 1,
-  },
-}));
 
 // Define the data types for better type safety
 export interface Column<T> {
@@ -155,7 +37,7 @@ export interface Column<T> {
   options?: string[]; // for select
 }
 
-type Order = "asc" | "desc";
+export type Order = "asc" | "desc";
 
 type FilterValue = string | number | boolean | string[];
 
@@ -164,7 +46,7 @@ interface SortState<T> {
   order: Order;
 }
 
-interface SearchFilter {
+interface SearchFilter<T> {
   column: keyof T;
   value: string;
 }
@@ -198,19 +80,20 @@ function SearchFilterDropdown<T>({
   };
 
   return (
-    <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start" sx={{ zIndex: 2 }}>
+    <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start" sx={{ zIndex: 2, fontSize: "8px" }}>
       <ClickAwayListener onClickAway={onClose}>
         <Paper sx={{ width: 300, maxHeight: 400, overflow: "auto" }}>
           <List>
             {filteredColumns.map((column) => (
               <ListItem key={String(column.id)} disablePadding>
                 <ListItemButton
+                  sx={{ padding: 0 }}
                   onClick={(e) => {
                     e.preventDefault(); // Prevent default to maintain focus
                     handleFilterClick(column.id);
                   }}
                 >
-                  <ListItemText primary={column.label} secondary={`Filter by ${column.label.toLowerCase()}`} />
+                  <span style={{ fontSize: "16px", paddingLeft: ".5rem" }}>{column.label}</span>
                 </ListItemButton>
               </ListItem>
             ))}
@@ -267,158 +150,6 @@ function getComparator<Key extends keyof any>(
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-type EnhancedTableProps<T> = {
-  numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: keyof T;
-  rowCount: number;
-  columns: Column<T>[];
-  columnWidths: Record<keyof T, number | string>;
-  handleResizeStart: (event: React.MouseEvent, columnId: keyof T) => void;
-};
-
-type EnhancedTableToolbarProps = {
-  tableName: string;
-  onRefresh: () => void;
-  onActionSelect: (action: string) => void;
-  lastRefreshTime: number;
-};
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { tableName, onRefresh, onActionSelect, lastRefreshTime } = props;
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleActionClick = (action: string) => {
-    onActionSelect(action);
-    handleMenuClose();
-  };
-
-  return (
-    <Toolbar
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-      }}
-    >
-      <Typography sx={{ flex: "1 1 100%" }} variant="h6" id="tableTitle" component="div">
-        {tableName}
-      </Typography>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: "16px",
-        }}
-      >
-        <RefreshIndicator lastRefreshTime={lastRefreshTime} onRefresh={onRefresh} />
-        <Button aria-controls="actions-menu" aria-haspopup="true" onClick={handleMenuOpen}>
-          Actions
-        </Button>
-        <Menu id="actions-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={() => handleActionClick("Edit")}>Edit</MenuItem>
-          <MenuItem onClick={() => handleActionClick("Delete")}>Delete</MenuItem>
-          <MenuItem onClick={() => handleActionClick("Add")}>Add</MenuItem>
-          <MenuItem onClick={() => handleActionClick("Export to Excel")}>Export to Excel</MenuItem>
-          <MenuItem onClick={() => handleActionClick("Export to CSV")}>Export to CSV</MenuItem>
-        </Menu>
-      </div>
-    </Toolbar>
-  );
-}
-
-function EnhancedTableHead<T>(props: EnhancedTableProps<T>) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-    columns,
-    columnWidths,
-    handleResizeStart,
-  } = props;
-  const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            slotProps={{
-              input: {
-                "aria-label": "Checkbox demo",
-              },
-            }}
-          />
-        </TableCell>
-        {columns.map((column) => (
-          <TableCell
-            key={String(column.id)}
-            align={column.align || "left"}
-            padding={column.disabledPadding ? "none" : "normal"}
-            sortDirection={orderBy === column.id ? order : false}
-            sx={{
-              position: "relative",
-              width: columnWidths[column.id] || "auto",
-              minWidth: "100px", // Prevent columns from becoming too narrow
-              fontSize: "0.875rem",
-              padding: "4px 24px 4px 8px",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between", // Pushes label and resize handle apart
-                pr: 2, // Additional right padding for label
-              }}
-            >
-              <TableSortLabel
-                active={orderBy === column.id}
-                direction={orderBy === column.id ? order : "asc"}
-                onClick={createSortHandler(column.id)}
-              >
-                {column.label}
-                {orderBy === column.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === "desc" ? "sorted descending" : "sorted ascending"}
-                  </Box>
-                ) : null}
-              </TableSortLabel>
-              <ResizeHandle
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleResizeStart(e, column.id);
-                }}
-              />
-            </Box>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
 function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T & { cancel: () => void } {
   let timeout: NodeJS.Timeout;
 
@@ -471,7 +202,7 @@ export function CustomTable<T extends Record<string, any>>({
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [lastRefreshTime, setLastRefreshTime] = useState<number>(Date.now());
   const [searchAnchorEl, setSearchAnchorEl] = useState<HTMLElement | null>(null);
-  const [activeFilters, setActiveFilters] = useState<SearchFilter[]>([]);
+  const [activeFilters, setActiveFilters] = useState<SearchFilter<T>[]>([]);
   const [currentFilterColumn, setCurrentFilterColumn] = useState<keyof T | null>(null);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -696,7 +427,7 @@ export function CustomTable<T extends Record<string, any>>({
     setCurrentFilterColumn(column);
     const columnLabel = columns.find((c) => c.id === column)?.label || String(column);
     setSearchTerm(`${columnLabel} = `);
-    
+
     // Ensure focus remains on the input and move cursor to the end
     if (searchInputRef.current) {
       searchInputRef.current.focus();
@@ -719,7 +450,7 @@ export function CustomTable<T extends Record<string, any>>({
     }
   };
 
-  const handleRemoveFilter = (filter: SearchFilter) => {
+  const handleRemoveFilter = (filter: SearchFilter<T>) => {
     setActiveFilters((prev) => prev.filter((f) => f !== filter));
     handleFilterChangeLocal(filter.column, "");
   };
@@ -733,16 +464,8 @@ export function CustomTable<T extends Record<string, any>>({
   };
 
   return (
-    <Box
-    // sx={{
-    //   display: "flex",
-    //   flexDirection: "column",
-    //   height,
-    //   width,
-    //   overflow: "hidden",
-    // }}
-    >
-      <EnhancedTableToolbar
+    <Box>
+      <TableToolbar
         tableName={tableName}
         onRefresh={handleRefresh}
         onActionSelect={handleActionSelect}
@@ -823,7 +546,7 @@ export function CustomTable<T extends Record<string, any>>({
       <Box>
         <StyledTableContainer>
           <Table>
-            <EnhancedTableHead<T>
+            <TableHeader
               numSelected={selected.length}
               onRequestSort={handleRequestSort}
               onSelectAllClick={handleSelectAllClick}
@@ -868,34 +591,15 @@ export function CustomTable<T extends Record<string, any>>({
                 );
               })}
             </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={columns.length}>
-                  <Box>
-                    <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
-                      {selected.length} selected
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TablePagination
-                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                  colSpan={columns.length}
-                  count={totalCount || 0}
-                  rowsPerPage={pageSize}
-                  page={page - 1}
-                  slotProps={{
-                    select: {
-                      inputProps: {
-                        "aria-label": "rows per page",
-                      },
-                      native: true,
-                    },
-                  }}
-                  onPageChange={handleChangePage}
-                  onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-              </TableRow>
-            </TableFooter>
+            <TableFooter
+              totalSelected={selected.length}
+              totalColumns={columns.length}
+              totalCount={totalCount || 0}
+              page={page - 1}
+              pageSize={pageSize}
+              handleChangePage={handleChangePage}
+              handleChangeRowsPerPage={handleChangeRowsPerPage}
+            />
           </Table>
         </StyledTableContainer>
       </Box>
