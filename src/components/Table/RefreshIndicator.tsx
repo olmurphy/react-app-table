@@ -26,7 +26,7 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1,
+        gap: 0.5,
         color: 'text.secondary',
         background: 'none',
         border: 'none',
@@ -43,11 +43,13 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
       }}
       aria-label="Refresh data"
     >
+      
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
           minWidth: 'fit-content',
+          alignItems: 'flex-end',
         }}
       >
         <Typography
@@ -71,7 +73,7 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
           {formatTimeAgo()}
         </Typography>
       </Box>
-      <RefreshIcon sx={{ fontSize: '1.25rem' }} />
+      <RefreshIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
     </Box>
   );
 }; 
