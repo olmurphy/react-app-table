@@ -163,7 +163,7 @@ function SearchFilterDropdown<T>({
   columns,
   onFilterSelect,
   searchTerm,
-}: SearchFilterDropdownProps<T>) {
+}: Readonly<SearchFilterDropdownProps<T>>) {
   const open = Boolean(anchorEl);
   const id = open ? "search-filter-popper" : undefined;
 
@@ -171,15 +171,11 @@ function SearchFilterDropdown<T>({
     (column) => column.filterable !== false && column.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  useEffect(() => {
-    console.log({
-      anchorEl,
-      onClose,
-      columns,
-      onFilterSelect,
-      searchTerm,
-    });
-  }, [anchorEl, onClose, columns, onFilterSelect, searchTerm]);
+  const handleFilterClick = (column: keyof T) => {
+    // Prevent the default behavior that might cause focus loss
+    onFilterSelect(column);
+    // Don't close the dropdown here - let the parent component handle it
+  };
 
   return (
     <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start" sx={{ zIndex: 2 }}>
@@ -189,9 +185,9 @@ function SearchFilterDropdown<T>({
             {filteredColumns.map((column) => (
               <ListItem key={String(column.id)} disablePadding>
                 <ListItemButton
-                  onClick={() => {
-                    onFilterSelect(column.id);
-                    onClose();
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent default to maintain focus
+                    handleFilterClick(column.id);
                   }}
                 >
                   <ListItemText primary={column.label} secondary={`Filter by ${column.label.toLowerCase()}`} />
@@ -675,11 +671,20 @@ export function CustomTable<T extends Record<string, any>>({
     setSearchAnchorEl(event.currentTarget);
   };
 
-
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const handleFilterSelect = (column: keyof T) => {
     setCurrentFilterColumn(column);
     const columnLabel = columns.find((c) => c.id === column)?.label || String(column);
     setSearchTerm(`${columnLabel} = `);
+    
+    // Ensure focus remains on the input and move cursor to the end
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+      const length = `${columnLabel} = `.length;
+      requestAnimationFrame(() => {
+        searchInputRef.current?.setSelectionRange(length, length);
+      });
+    }
   };
 
   const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -748,11 +753,11 @@ export function CustomTable<T extends Record<string, any>>({
             }}
           />
           <InputBase
+            inputRef={searchInputRef}
             placeholder="Search…"
             value={searchTerm}
             onChange={handleSearchChange}
             onClick={handleSearchFocus}
-            // onBlur={handleSearchBlur}
             onKeyDown={handleSearchKeyDown}
             sx={(theme) => ({
               width: "100%",
