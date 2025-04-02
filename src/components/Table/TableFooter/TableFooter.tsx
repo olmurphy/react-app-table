@@ -4,7 +4,6 @@ import TableCell from "@mui/material/TableCell";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import React from "react";
 
 type TableFooterProps = {
   totalSelected: number;
@@ -14,55 +13,51 @@ type TableFooterProps = {
   pageSize: number;
   handleChangePage: (event: unknown, newPage: number) => void;
   handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
+};
 
 export function TableFooter(props: Readonly<TableFooterProps>) {
   return (
     <TableFooterMUI>
       <TableRow>
-        <TableCell 
-          sx={{ 
-            position: 'sticky', 
-            left: 0, 
-            backgroundColor: 'background.paper',
-            zIndex: 1,
-            borderRight: '1px solid',
-            borderColor: 'divider'
-          }}
-        >
-          <Box>
-            <Typography color="inherit" variant="subtitle1" component="div">
-              {props.totalSelected} selected
-            </Typography>
-          </Box>
-        </TableCell>
-        <TableCell colSpan={props.totalColumns - 1} />
-        <TableCell 
-          sx={{ 
-            position: 'sticky', 
-            right: 0, 
-            backgroundColor: 'background.paper',
-            zIndex: 1,
-            borderLeft: '1px solid',
-            borderColor: 'divider'
-          }}
-        >
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-            count={props.totalCount}
-            rowsPerPage={props.pageSize}
-            page={props.page}
-            slotProps={{
-              select: {
-                inputProps: {
-                  "aria-label": "rows per page",
-                },
-                native: true,
+        <TableCell sx={{ width: "100%", py: 0}} colSpan={props.totalColumns + 1}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 0,
+              width: "100%",
+              backgroundColor: "inherit",
+              margin: 0,
+              "& .MuiTablePagination-root": {
+                marign: 0,
+                padding: 0,
               },
             }}
-            onPageChange={props.handleChangePage}
-            onRowsPerPageChange={props.handleChangeRowsPerPage}
-          />
+          >
+            <Box>
+              <Typography color="inherit" variant="subtitle1" component="div">
+                {props.totalSelected} selected
+              </Typography>
+            </Box>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+              colSpan={props.totalColumns}
+              count={props.totalCount}
+              rowsPerPage={props.pageSize}
+              page={props.page}
+              slotProps={{
+                select: {
+                  inputProps: {
+                    "aria-label": "rows per page",
+                  },
+                  native: true,
+                },
+              }}
+              onPageChange={props.handleChangePage}
+              onRowsPerPageChange={props.handleChangeRowsPerPage}
+            />
+          </Box>
         </TableCell>
       </TableRow>
     </TableFooterMUI>
