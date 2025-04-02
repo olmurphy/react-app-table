@@ -29,6 +29,26 @@ import visuallyHidden from "@mui/utils/visuallyHidden";
 import { RefreshIndicator } from "@src/components/Table/RefreshIndicator";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+
+// export function CustomTable<T extends Record<string, any>>(props: TableProps<T>) {
+//   return (
+//     <TableProvider<T> {...props}>
+//       <Box>
+//         <TableToolbar />
+//         <TableSearch />
+//         <TableFilters />
+//         <StyledTableContainer>
+//           <Table>
+//             <TableHeader />
+//             <TableBody />
+//             <TableFooter />
+//           </Table>
+//         </StyledTableContainer>
+//       </Box>
+//     </TableProvider>
+//   );
+// }
+
 const ResizeHandle = styled("div")(({ theme }) => ({
   position: "absolute",
   right: 0,
