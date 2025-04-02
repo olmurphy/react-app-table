@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 type TimeUnit = 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'year';
 
-interface TimeAgo {
+type TimeAgo = {
   value: number;
   unit: TimeUnit;
 }

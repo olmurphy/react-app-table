@@ -1,9 +1,7 @@
-import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
 import InputBase from "@mui/material/InputBase";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -20,8 +18,8 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import visuallyHidden from "@mui/utils/visuallyHidden";
+import { RefreshIndicator } from "@src/components/Table/RefreshIndicator";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { RefreshIndicator } from './RefreshIndicator';
 
 const ResizeHandle = styled("div")(({ theme }) => ({
   position: "absolute",
@@ -49,19 +47,10 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
     theme.palette.mode === "light"
       ? "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)"
       : "0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3)",
-    height: "500px",
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    // overflow: "hidden", // Prevent double scrollbars
-  
-  // // Table wrapper to enable horizontal scrolling while keeping header fixed
-  // "& .MuiTable-root": {
-  //   display: "flex",
-  //   flexDirection: "column",
-  //   height: "100%",
-  // },
-
+  maxHeight: "900px",
+  maxWidth: "100%",
+  display: "flex",
+  flexDirection: "column",
 
   "& .MuiTableRow-root": {
     "&:hover": {
@@ -105,8 +94,6 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
     },
   },
   "& .MuiTableBody-root": {
-    // flex: 1,
-    // overflow: "auto",
     "& .MuiTableRow-root": {
       height: "36px", // Reduced row height
       "& .MuiTableCell-root": {
@@ -115,13 +102,13 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
     },
   },
 
-  // // Fixed footer
-  // "& .MuiTableFooter-root": {
-  //   position: "sticky",
-  //   bottom: 0,
-  //   backgroundColor: theme.palette.background.paper,
-  //   zIndex: 2,
-  // },
+  // Fixed footer
+  "& .MuiTableFooter-root": {
+    position: "sticky",
+    bottom: 0,
+    backgroundColor: theme.palette.background.paper,
+    zIndex: 2,
+  },
 }));
 
 // Define the data types for better type safety
@@ -255,8 +242,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           Actions
         </Button>
         <Menu id="actions-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={() => handleActionClick("Action 1")}>Action 1</MenuItem>
-          <MenuItem onClick={() => handleActionClick("Action 2")}>Action 2</MenuItem>
+          <MenuItem onClick={() => handleActionClick("Edit")}>Edit</MenuItem>
+          <MenuItem onClick={() => handleActionClick("Delete")}>Delete</MenuItem>
+          <MenuItem onClick={() => handleActionClick("Add")}>Add</MenuItem>
+          <MenuItem onClick={() => handleActionClick("Export to Excel")}>Export to Excel</MenuItem>
+          <MenuItem onClick={() => handleActionClick("Export to CSV")}>Export to CSV</MenuItem>
         </Menu>
       </div>
     </Toolbar>
@@ -619,15 +609,20 @@ export function CustomTable<T extends Record<string, any>>({
 
   return (
     <Box
-      // sx={{
-      //   display: "flex",
-      //   flexDirection: "column",
-      //   height,
-      //   width,
-      //   overflow: "hidden",
-      // }}
+    // sx={{
+    //   display: "flex",
+    //   flexDirection: "column",
+    //   height,
+    //   width,
+    //   overflow: "hidden",
+    // }}
     >
-      <EnhancedTableToolbar tableName={tableName} onRefresh={handleRefresh} onActionSelect={handleActionSelect} lastRefreshTime={lastRefreshTime} />
+      <EnhancedTableToolbar
+        tableName={tableName}
+        onRefresh={handleRefresh}
+        onActionSelect={handleActionSelect}
+        lastRefreshTime={lastRefreshTime}
+      />
       <Box
         sx={{
           display: "flex",
@@ -675,85 +670,85 @@ export function CustomTable<T extends Record<string, any>>({
         </Box>
       </Box>
       <Box>
-      <StyledTableContainer>
-        <Table>
-          <EnhancedTableHead<T>
-            numSelected={selected.length}
-            onRequestSort={handleRequestSort}
-            onSelectAllClick={handleSelectAllClick}
-            order={sortState.order}
-            orderBy={sortState.orderBy}
-            rowCount={data.length}
-            columns={columns}
-            columnWidths={columnWidths}
-            handleResizeStart={handleResizeStart}
-          />
-          <TableBody>
-            {processedData.map((row, index) => {
-              const isItemSelected = selected.includes(row);
-              const labelId = `enhanced-table-checkbox-${index}`;
+        <StyledTableContainer>
+          <Table>
+            <EnhancedTableHead<T>
+              numSelected={selected.length}
+              onRequestSort={handleRequestSort}
+              onSelectAllClick={handleSelectAllClick}
+              order={sortState.order}
+              orderBy={sortState.orderBy}
+              rowCount={data.length}
+              columns={columns}
+              columnWidths={columnWidths}
+              handleResizeStart={handleResizeStart}
+            />
+            <TableBody>
+              {processedData.map((row, index) => {
+                const isItemSelected = selected.includes(row);
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-              console.log("isItemSelected", isItemSelected);
+                console.log("isItemSelected", isItemSelected);
 
-              return (
-                <TableRow
-                  hover
-                  onClick={(event) => handleSelectOneClick(event, row)}
-                  key={row.id}
-                  role="checkbox"
-                  aria-checked={isItemSelected}
-                  tabIndex={-1}
-                  selected={isItemSelected}
-                  sx={{ cursor: "pointer", height: "40px" }}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isItemSelected}
-                      slotProps={{
-                        input: {
-                          "aria-label": "Checkbox demo",
-                        },
-                      }}
-                    />
-                  </TableCell>
-                  {columns.map((column) => {
-                    return <TableCell key={column.id as number}>{row[column.id as keyof T]}</TableCell>;
-                  })}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={columns.length}>
-                <Box>
-                  <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
-                    {selected.length} selected
-                  </Typography>
-                </Box>
-              </TableCell>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-                colSpan={columns.length}
-                count={totalCount || 0}
-                rowsPerPage={pageSize}
-                page={page - 1}
-                slotProps={{
-                  select: {
-                    inputProps: {
-                      "aria-label": "rows per page",
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleSelectOneClick(event, row)}
+                    key={row.id}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    selected={isItemSelected}
+                    sx={{ cursor: "pointer", height: "40px" }}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isItemSelected}
+                        slotProps={{
+                          input: {
+                            "aria-label": "Checkbox demo",
+                          },
+                        }}
+                      />
+                    </TableCell>
+                    {columns.map((column) => {
+                      return <TableCell key={column.id as number}>{row[column.id as keyof T]}</TableCell>;
+                    })}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={columns.length}>
+                  <Box>
+                    <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
+                      {selected.length} selected
+                    </Typography>
+                  </Box>
+                </TableCell>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
+                  colSpan={columns.length}
+                  count={totalCount || 0}
+                  rowsPerPage={pageSize}
+                  page={page - 1}
+                  slotProps={{
+                    select: {
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
                     },
-                    native: true,
-                  },
-                }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </StyledTableContainer>
+                  }}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </StyledTableContainer>
       </Box>
     </Box>
   );

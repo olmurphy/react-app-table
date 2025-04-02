@@ -39,18 +39,16 @@ export function CompanyDomainPage() {
       <BreadCrumbs />
       Company Domain Page
 
-      <CustomTable<DataRow>
-        tableName={"Company Domain"}
-        data={data}
-        columns={columns}
-        page={page}
-        pageSize={pageSize}
-        totalCount={totalCount}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handleRowsPerChange}
-      >
-
-      </CustomTable>
-    </div>
+        <CustomTable<DataRow>
+          tableName={"Company Domain"}
+          data={data}
+          columns={columns}
+          page={page}
+          pageSize={pageSize}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleRowsPerChange}
+        />
+      </div>
   );
 }
