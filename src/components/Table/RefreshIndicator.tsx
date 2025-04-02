@@ -12,7 +12,7 @@ interface RefreshIndicatorProps {
 export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshTime, onRefresh }) => {
   const timeAgo = useTimeAgo(lastRefreshTime);
 
-  const formatTimeAgo = () => {
+  const formatTimeAgo = (): string => {
     const { value, unit } = timeAgo;
     if (value === 0) return 'just now';
     if (value === 1) return `1 ${unit} ago`;
@@ -21,34 +21,57 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
 
   return (
     <Box
+      component="button"
+      onClick={onRefresh}
       sx={{
         display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        gap: 1,
         color: 'text.secondary',
+        background: 'none',
+        border: 'none',
+        padding: 0.5,
         cursor: 'pointer',
         '&:hover': {
           color: 'primary.main',
         },
+        '&:focus': {
+          outline: '2px solid',
+          outlineColor: 'primary.main',
+          outlineOffset: 2,
+        },
       }}
-      onClick={onRefresh}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          onRefresh();
-        }
-      }}
+      aria-label="Refresh data"
     >
-      <div style={{ display: 'flex', alignItems: 'right', flexDirection: "column", gap: 0.5 }}>
-        <Typography variant="caption" component="span" sx={{ fontSize: '0.75rem' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 'fit-content',
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="span"
+          sx={{
+            fontSize: '0.75rem',
+            lineHeight: 1,
+          }}
+        >
           Last updated
         </Typography>
-        <Typography variant="caption" component="span" sx={{ fontSize: '0.75rem' }}>
-        {formatTimeAgo()}
-      </Typography>
-      </div>
-      <RefreshIcon />
+        <Typography
+          variant="caption"
+          component="span"
+          sx={{
+            fontSize: '0.75rem',
+            lineHeight: 1,
+          }}
+        >
+          {formatTimeAgo()}
+        </Typography>
+      </Box>
+      <RefreshIcon sx={{ fontSize: '1.25rem' }} />
     </Box>
   );
 }; 
