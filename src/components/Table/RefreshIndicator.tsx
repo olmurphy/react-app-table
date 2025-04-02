@@ -27,13 +27,15 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
-        color: 'text.secondary',
+        color: 'text.primary',
         background: 'none',
         border: 'none',
-        padding: 0.5,
+        padding: '6px 16px',
         cursor: 'pointer',
+        borderRadius: 1,
+        transition: 'background-color 0.2s',
         '&:hover': {
-          color: 'primary.main',
+          backgroundColor: 'action.hover',
         },
         '&:focus': {
           outline: '2px solid',
@@ -43,7 +45,6 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
       }}
       aria-label="Refresh data"
     >
-      
       <Box
         sx={{
           display: 'flex',
@@ -73,7 +74,7 @@ export const RefreshIndicator: React.FC<RefreshIndicatorProps> = ({ lastRefreshT
           {formatTimeAgo()}
         </Typography>
       </Box>
-      <RefreshIcon sx={{ fontSize: '1.25rem', mr: 0.5 }} />
+      <RefreshIcon sx={{ fontSize: '1.25rem', ml: 0.5 }} />
     </Box>
   );
 }; 
