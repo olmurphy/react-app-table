@@ -20,6 +20,14 @@ import Typography from "@mui/material/Typography";
 import visuallyHidden from "@mui/utils/visuallyHidden";
 import { RefreshIndicator } from "@src/components/Table/RefreshIndicator";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Chip from "@mui/material/Chip";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemButton from "@mui/material/ListItemButton";
 
 const ResizeHandle = styled("div")(({ theme }) => ({
   position: "absolute",
@@ -134,6 +142,53 @@ type FilterValue = string | number | boolean | string[];
 interface SortState<T> {
   orderBy: keyof T;
   order: Order;
+}
+
+interface SearchFilter {
+  column: keyof T;
+  value: string;
+}
+
+interface SearchFilterDropdownProps<T> {
+  anchorEl: HTMLElement | null;
+  onClose: () => void;
+  columns: Column<T>[];
+  onFilterSelect: (column: keyof T) => void;
+  searchTerm: string;
+}
+
+function SearchFilterDropdown<T>({ anchorEl, onClose, columns, onFilterSelect, searchTerm }: SearchFilterDropdownProps<T>) {
+  const open = Boolean(anchorEl);
+  const id = open ? 'search-filter-popper' : undefined;
+
+  const filteredColumns = columns.filter(column => 
+    column.filterable !== false && 
+    column.label.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <Popper id={id} open={open} anchorEl={anchorEl} placement="bottom-start">
+      <ClickAwayListener onClickAway={onClose}>
+        <Paper sx={{ width: 300, maxHeight: 400, overflow: 'auto' }}>
+          <List>
+            {filteredColumns.map((column) => (
+              <ListItem key={String(column.id)} disablePadding>
+                <ListItemButton onClick={() => {
+                  onFilterSelect(column.id);
+                  onClose();
+                }}>
+                  <ListItemText 
+                    primary={column.label}
+                    secondary={`Filter by ${column.label.toLowerCase()}`}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      </ClickAwayListener>
+    </Popper>
+  );
 }
 
 interface TableProps<T> {
@@ -385,6 +440,9 @@ export function CustomTable<T extends Record<string, any>>({
   const startWidth = useRef<number>(0);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [lastRefreshTime, setLastRefreshTime] = useState<number>(Date.now());
+  const [searchAnchorEl, setSearchAnchorEl] = useState<HTMLElement | null>(null);
+  const [activeFilters, setActiveFilters] = useState<SearchFilter[]>([]);
+  const [currentFilterColumn, setCurrentFilterColumn] = useState<keyof T | null>(null);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -607,6 +665,48 @@ export function CustomTable<T extends Record<string, any>>({
     });
   };
 
+  const handleSearchFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    setSearchAnchorEl(event.currentTarget);
+  };
+
+  const handleSearchBlur = () => {
+    // Small delay to allow click events to fire
+    setTimeout(() => {
+      setSearchAnchorEl(null);
+    }, 200);
+  };
+
+  const handleFilterSelect = (column: keyof T) => {
+    setCurrentFilterColumn(column);
+    const columnLabel = columns.find(c => c.id === column)?.label || String(column);
+    setSearchTerm(`${columnLabel} = `);
+  };
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const value = searchTerm.split(' = ')[1]?.trim();
+      if (value && currentFilterColumn) {
+        setActiveFilters(prev => [...prev, { column: currentFilterColumn, value }]);
+        handleFilterChangeLocal(currentFilterColumn, value);
+        setSearchTerm('');
+        setCurrentFilterColumn(null);
+      }
+    }
+  };
+
+  const handleRemoveFilter = (filter: SearchFilter) => {
+    setActiveFilters(prev => prev.filter(f => f !== filter));
+    handleFilterChangeLocal(filter.column, '');
+  };
+
+  const handleClearFilters = () => {
+    setActiveFilters([]);
+    setFilters({});
+    if (onFilterChange) {
+      onFilterChange({});
+    }
+  };
+
   return (
     <Box
     // sx={{
@@ -626,16 +726,16 @@ export function CustomTable<T extends Record<string, any>>({
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
           padding: "8px",
-          // borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+          gap: "8px",
         }}
       >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            maxWidth: "500px", // Limit search bar width
+            maxWidth: "500px",
             width: "100%",
             position: "relative",
           }}
@@ -651,9 +751,12 @@ export function CustomTable<T extends Record<string, any>>({
             placeholder="Search…"
             value={searchTerm}
             onChange={handleSearchChange}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
+            onKeyDown={handleSearchKeyDown}
             sx={(theme) => ({
               width: "100%",
-              padding: "4px 8px 4px 36px", // Add left padding for search icon
+              padding: "4px 8px 4px 36px",
               borderRadius: 1,
               backgroundColor:
                 theme.palette.mode === "light"
@@ -667,7 +770,33 @@ export function CustomTable<T extends Record<string, any>>({
               },
             })}
           />
+          <SearchFilterDropdown
+            anchorEl={searchAnchorEl}
+            onClose={() => setSearchAnchorEl(null)}
+            columns={columns}
+            onFilterSelect={handleFilterSelect}
+            searchTerm={searchTerm}
+          />
         </Box>
+        {activeFilters.length > 0 && (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {activeFilters.map((filter, index) => (
+              <Chip
+                key={index}
+                label={`${columns.find(c => c.id === filter.column)?.label || String(filter.column)} = ${filter.value}`}
+                onDelete={() => handleRemoveFilter(filter)}
+                color="primary"
+                variant="outlined"
+              />
+            ))}
+            <Chip
+              label="Clear filters"
+              onClick={handleClearFilters}
+              color="default"
+              variant="outlined"
+            />
+          </Box>
+        )}
       </Box>
       <Box>
         <StyledTableContainer>
