@@ -606,3 +606,97 @@ export function CustomTable<T extends Record<string, any>>({
     </Box>
   );
 }
+
+
+
+// export function Table<T extends Record<string, any>>(props: TableProps<T>) {
+//   const {
+//     data,
+//     columns,
+//     isServerSide = false,
+//     loading = false,
+//     // ... other props destructuring
+//   } = props;
+
+//   const { sortState, handleRequestSort } = useTableSort<T>({
+//     initialSort: props.initialSort,
+//     onSortChange: props.onSortChange,
+//   });
+
+//   const contextValue = {
+//     columns,
+//     data,
+//     isServerSide,
+//     loading,
+//     // ... other shared values
+//   };
+
+//   return (
+//     <TableProvider value={contextValue}>
+//       <Box>
+//         <SearchBar />
+//         <FilterChips />
+//         <StyledTableContainer>
+//           <TableHeader 
+//             onRequestSort={handleRequestSort}
+//             sortState={sortState}
+//           />
+//           <TableBody />
+//           <TableFooter />
+//         </StyledTableContainer>
+//       </Box>
+//     </TableProvider>
+//   );
+// }
+
+
+// export function CustomTable<T extends Record<string, any>>({ 
+//   tableName,
+//   data,
+//   columns,
+//   // ... other props
+// }: Readonly<TableProps<T>>) {
+//   const { sortState, handleRequestSort } = useTableSort({
+//     initialSort,
+//     onSortChange,
+//   });
+
+//   const {
+//     filters,
+//     activeFilters,
+//     handleFilterChange,
+//     handleRemoveFilter,
+//     handleClearFilters,
+//   } = useTableFilter({
+//     onFilterChange,
+//   });
+
+//   const { selected, handleSelectAllClick, handleSelectOneClick } = useTableSelection({
+//     data,
+//     onSelectionChange,
+//   });
+
+//   const { columnWidths, handleResizeStart } = useTableResize<T>();
+
+//   const {
+//     searchTerm,
+//     searchAnchorEl,
+//     searchInputRef,
+//     handleSearchChange,
+//     handleSearchFocus,
+//     handleFilterSelect,
+//     handleSearchClose,
+//   } = useTableSearch({
+//     columns,
+//     onFilterChange: handleFilterChange,
+//   });
+
+//   const { handleChangePage, handleChangeRowsPerPage } = useTablePagination({
+//     page,
+//     pageSize,
+//     onPageChange,
+//     onPageSizeChange,
+//   });
+
+//   // ... rest of the component
+// }
