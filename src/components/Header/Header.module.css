@@ -1,0 +1,50 @@
+.surface {
+  padding: 12px;
+  background-color: var(--bg);
+  color: var(--text);
+  height: 60px;
+}
+
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure header stays above other content */
+}
+
+.headerSpacer {
+  height: 60px; /* Should match your header height */
+  width: 100%;
+}
+
+.navbar {
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.navBarHidden {
+  transform: translateY(-100%);
+}
+
+.nav-links {
+  font-size: 18px;
+}
+
+.nav-link {
+  margin: 10rem;
+}
+
+.underline {
+  box-shadow: inset 0 -1px 0 var(--header-line, white);
+  display: flex;
+  min-height: 3rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: auto;
+  justify-content: space-between;
+}

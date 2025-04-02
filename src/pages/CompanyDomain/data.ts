@@ -1,0 +1,23 @@
+import { Columns } from "./CompainDomain.types";
+export const data: Columns[] = [
+  { id: 1, firstName: "Nicklaus", lastName: "Kuhn", birthday: "2002-12-16T22:38:05.860Z" },
+  { id: 2, firstName: "Dino", lastName: "Nitzsche", birthday: "1964-04-04T11:10:10.026Z" },
+  { id: 3, firstName: "Darby", lastName: "Batz", birthday: "1978-04-13T22:44:57.141Z" },
+  { id: 4, firstName: "Makayla", lastName: "Price", birthday: "1971-02-02T13:17:10.646Z" },
+  { id: 5, firstName: "Eileen", lastName: "Rutherford", birthday: "1970-05-26T05:52:10.584Z" },
+  { id: 6, firstName: "Antonina", lastName: "Johnston", birthday: "1999-01-18T08:55:53.078Z" },
+  { id: 7, firstName: "Ericka", lastName: "Ankunding", birthday: "1970-05-07T11:50:40.682Z" },
+  { id: 8, firstName: "Jacynthe", lastName: "Wyman", birthday: "1960-09-01T13:08:06.433Z" },
+  { id: 9, firstName: "Camilla", lastName: "O'Reilly", birthday: "2001-09-03T21:41:02.709Z" },
+  { id: 10, firstName: "Julian", lastName: "Walter", birthday: "2002-12-29T12:37:34.689Z" },
+  { id: 11, firstName: "Eulah", lastName: "Mante", birthday: "1974-04-05T06:00:13.598Z" },
+  { id: 12, firstName: "Darwin", lastName: "Haley", birthday: "1997-10-07T05:01:08.019Z" },
+  { id: 13, firstName: "Lionel", lastName: "Gottlieb", birthday: "1974-03-22T18:34:13.988Z" },
+  { id: 14, firstName: "Michale", lastName: "Hahn", birthday: "1993-04-04T06:36:34.825Z" },
+  { id: 15, firstName: "Sydni", lastName: "Windler", birthday: "2005-10-13T15:23:11.145Z" },
+  { id: 16, firstName: "Brando", lastName: "Waters", birthday: "1960-06-05T03:34:00.315Z" },
+  { id: 17, firstName: "Anika", lastName: "Hermiston", birthday: "1980-10-10T13:51:22.793Z" },
+  { id: 18, firstName: "Dorothea", lastName: "McClure", birthday: "1970-08-12T16:17:48.296Z" },
+  { id: 19, firstName: "Valentine", lastName: "Donnelly", birthday: "1972-02-16T09:02:12.678Z" },
+  { id: 20, firstName: "Emilio", lastName: "Heller", birthday: "1985-05-02T17:22:59.373Z" },
+];

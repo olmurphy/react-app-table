@@ -1,0 +1,14 @@
+import { Route } from "@americanexpress/one-app-router";
+import { CompanyDomainPage } from "./pages/CompanyDomain/CompanyDomain";
+import { EditorPage } from "./pages/Editor/Editor";
+import { HomePage } from "./pages/Home/Home";
+import { InitiativesPage } from "./pages/Initiatives/Initiatives";
+
+const childRoutes = () => [
+  <Route key="/" path="/" components={HomePage} />,
+  <Route key="/company-domains" path="/company-domains" components={CompanyDomainPage} />,
+  <Route key="/initiatives" path="/initiatives" components={InitiativesPage} />,
+  <Route key="/editor" path="/editor" components={EditorPage} />,
+];
+
+export default childRoutes;
