@@ -1,7 +1,46 @@
-import React, { createContext, useContext, useReducer, useMemo } from 'react';
-import { TableState, TableAction, Column } from '../Table.types';
+import React, { createContext, useContext, useMemo, useReducer } from 'react';
+import { Column, SearchFilter } from '../Table.types';
+export interface TableState<T> {
+  data: T[];
+  columns: Column<T>[];
+  isServerSide: boolean;
+  loading: boolean;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  sortState: {
+    orderBy: keyof T | null;
+    order: 'asc' | 'desc';
+  };
+  filters: Partial<Record<keyof T, string | number | boolean | string[]>>;
+  activeFilters: SearchFilter<T>[];
+  searchState: {
+    searchTerm: string;
+    searchField: keyof T | null;
+  };
+  selected: T[];
+}
 
-interface TableContextValue<T> {
+export type TableAction<T> =
+  | { type: 'SET_DATA'; payload: T[] }
+  | { type: 'SET_COLUMNS'; payload: Column<T>[] }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_PAGE'; payload: number }
+  | { type: 'SET_PAGE_SIZE'; payload: number }
+  | { type: 'SET_TOTAL_COUNT'; payload: number }
+  | { type: 'SET_SORT'; payload: { orderBy: keyof T; order: 'asc' | 'desc' } }
+  | { type: 'SET_FILTERS'; payload: { field: keyof T; value: string | number | boolean | string[] } }
+  | { type: 'CLEAR_ALL_FILTERS' }
+  | { type: "SET_ACTIVE_FILTER"; payload: { column: keyof T, value: string }}
+  | { type: "CLEAR_ACTIVE_FILTER"; payload: { column: keyof T }}
+  | { type: "CLEAR_ALL_ACTIVE_FILTERS"; }
+  | { type: 'SET_SEARCH'; payload: { term: string; field: keyof T | null } }
+  | { type: 'SELECT_ROW'; payload: T }
+  | { type: 'DESELECT_ROW'; payload: T }
+  | { type: 'SELECT_ALL' }
+  | { type: 'DESELECT_ALL' } ;
+
+type TableContextValue<T> = {
   state: TableState<T>;
   dispatch: React.Dispatch<TableAction<T>>;
 }
@@ -21,6 +60,7 @@ const initialState = {
     order: 'asc' as const,
   },
   filters: {},
+  activeFilters: [],
   searchState: {
     searchTerm: '',
     searchField: null,
@@ -44,16 +84,21 @@ function tableReducer<T>(state: TableState<T>, action: TableAction<T>): TableSta
       return { ...state, totalCount: action.payload };
     case 'SET_SORT':
       return { ...state, sortState: action.payload };
-    case 'SET_FILTER':
+    case 'SET_FILTERS':
       return {
         ...state,
         filters: { ...state.filters, [action.payload.field]: action.payload.value },
       };
-    case 'CLEAR_FILTER':
-      const { [action.payload]: _, ...remainingFilters } = state.filters;
-      return { ...state, filters: remainingFilters };
-    case 'CLEAR_ALL_FILTERS':
-      return { ...state, filters: {} };
+    
+    case 'SET_ACTIVE_FILTER':
+      return {
+        ...state,
+        activeFilters: [...state.activeFilters, { column: action.payload.column, value: action.payload.value}],
+      }
+    case 'CLEAR_ACTIVE_FILTER':
+      return { ...state, activeFilters: state.activeFilters.filter((f) => f.column !== action.payload.column) };
+    case 'CLEAR_ALL_ACTIVE_FILTERS':
+      return { ...state, activeFilters: []};
     case 'SET_SEARCH':
       return {
         ...state,
@@ -84,7 +129,7 @@ function tableReducer<T>(state: TableState<T>, action: TableAction<T>): TableSta
   }
 }
 
-interface TableProviderProps<T> {
+type TableProviderProps<T> = {
   children: React.ReactNode;
   data: T[];
   columns: Column<T>[];
@@ -105,7 +150,7 @@ export function TableProvider<T>({
   pageSize = 10,
   totalCount = 0,
 }: TableProviderProps<T>) {
-  const [state, dispatch] = useReducer(tableReducer, {
+  const [state, dispatch] = useReducer<React.Reducer<TableState<T>, TableAction<T>>>(tableReducer, {
     ...initialState,
     data,
     columns,
@@ -115,7 +160,6 @@ export function TableProvider<T>({
     pageSize,
     totalCount,
   });
-
   const processedData = useMemo(() => {
     if (state.isServerSide) {
       return state.data;
@@ -123,24 +167,24 @@ export function TableProvider<T>({
 
     let filteredData = state.data;
 
-    // Apply filters
-    Object.entries(state.filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        filteredData = filteredData.filter((row: T) => {
-          const rowValue = row[key as keyof T];
+    // // Apply filters
+    // Object.entries(state.filters).forEach(([key, value]) => {
+    //   if (value !== undefined && value !== null && value !== '') {
+    //     filteredData = filteredData.filter((row: T) => {
+    //       const rowValue = row[key as keyof T];
 
-          if (Array.isArray(value)) {
-            return value.includes(rowValue as string);
-          }
+    //       if (Array.isArray(value)) {
+    //         return value.includes(rowValue as string);
+    //       }
 
-          if (typeof rowValue === 'string' && typeof value === 'string') {
-            return rowValue.toLowerCase().includes(value.toLowerCase());
-          }
+    //       if (typeof rowValue === 'string' && typeof value === 'string') {
+    //         return rowValue.toLowerCase().includes(value.toLowerCase());
+    //       }
 
-          return rowValue === value;
-        });
-      }
-    });
+    //       return rowValue === value;
+    //     });
+    //   }
+    // });
 
     // Apply search
     if (state.searchState.searchTerm && state.searchState.searchField) {
@@ -170,7 +214,7 @@ export function TableProvider<T>({
     return filteredData;
   }, [state.data, state.filters, state.searchState, state.sortState, state.isServerSide]);
 
-  const value = useMemo(
+  const value: TableContextValue<T> = useMemo(
     () => ({
       state: { ...state, processedData },
       dispatch,

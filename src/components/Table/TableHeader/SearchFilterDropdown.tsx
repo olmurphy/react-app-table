@@ -10,7 +10,7 @@ import { useTableContext } from '../contexts/TableContext';
 interface SearchFilterDropdownProps<T> {
   anchorEl: HTMLElement | null;
   onClose: () => void;
-  onFilterSelect: (field: keyof T) => void;
+  onFilterSelect: (column: keyof T) => void;
   searchTerm: string;
 }
 
@@ -39,12 +39,18 @@ export function SearchFilterDropdown<T>({
       style={{ zIndex: 1300 }}
     >
       <ClickAwayListener onClickAway={onClose}>
-        <Paper elevation={3}>
-          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+        <Paper sx={{ width: 300, maxHeight: 400, overflow: "auto" }}>
+        <List>
             {filteredColumns.map((column) => (
               <ListItem key={String(column.id)} disablePadding>
-                <ListItemButton onClick={() => onFilterSelect(column.id as keyof T)}>
-                  {column.label}
+                <ListItemButton
+                  sx={{ padding: 0 }}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent default to maintain focus
+                    onFilterSelect(column.id as keyof T);
+                  }}
+                >
+                  <span style={{ fontSize: "16px", paddingLeft: ".5rem" }}>{column.label}</span>
                 </ListItemButton>
               </ListItem>
             ))}

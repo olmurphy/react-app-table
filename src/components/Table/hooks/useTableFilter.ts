@@ -4,12 +4,12 @@ import { useTableContext } from '../contexts/TableContext';
 export function useTableFilter<T>() {
   const { state, dispatch } = useTableContext<T>();
 
-  const handleFilterChange = useCallback((property: keyof T, value: string | number | boolean | string[]) => {
+  const handleAddFilter = useCallback((property: keyof T, value: string | number | boolean | string[]) => {
     dispatch({
       type: 'SET_FILTERS',
       payload: {
-        ...state.filters,
-        [property]: value,
+        field: property,
+        value: value,
       },
     });
   }, [state.filters, dispatch]);
@@ -18,22 +18,20 @@ export function useTableFilter<T>() {
     const newFilters = { ...state.filters };
     delete newFilters[column];
     dispatch({
-      type: 'SET_FILTERS',
-      payload: newFilters,
+      type: 'CLEAR_FILTER',
+      payload: column,
     });
   }, [state.filters, dispatch]);
 
   const handleClearFilters = useCallback(() => {
     dispatch({
-      type: 'SET_FILTERS',
-      payload: {},
+      type: 'CLEAR_ALL_FILTERS',
     });
   }, [dispatch]);
 
   return {
     filters: state.filters,
-    activeFilters: state.activeFilters,
-    handleFilterChange,
+    handleAddFilter,
     handleRemoveFilter,
     handleClearFilters,
   };

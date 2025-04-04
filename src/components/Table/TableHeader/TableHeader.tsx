@@ -6,7 +6,8 @@ import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import { ResizeHandle } from "./ResizeHandle";
 import visuallyHidden from "@mui/utils/visuallyHidden";
-import { Column, Order } from "../Table";
+import { Column, Order } from "../Table.types";
+import { useTableContext } from "../contexts/TableContext";
 
 type TableHeader<T> = {
   numSelected: number;
@@ -21,6 +22,7 @@ type TableHeader<T> = {
 };
 
 export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
+  const { state, dispatch } = useTableContext<T>();
   const {
     onSelectAllClick,
     order,
@@ -33,6 +35,14 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
     handleResizeStart,
   } = props;
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
+    const isAsc = state.sortState.orderBy === property && state.sortState.order === "asc";
+    dispatch({
+      type: "SET_SORT",
+      payload: {
+        orderBy: property,
+        order: isAsc ? "desc" : "asc",
+      }
+    })
     onRequestSort(event, property);
   };
 
@@ -52,7 +62,7 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
             }}
           />
         </TableCell>
-        {columns.map((column) => (
+        {state.columns.map((column) => (
           <TableCell
             key={String(column.id)}
             align={column.align || "left"}

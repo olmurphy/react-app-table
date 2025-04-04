@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { Column } from '../types';
+import { Column } from '@src/components/Table/Table.types';
 
 interface UseTableSearchProps<T> {
   columns: Column<T>[];
