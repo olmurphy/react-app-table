@@ -1,37 +1,38 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
-import { Column } from '../Table.types';
+import { useTableContext } from '../contexts/TableContext';
 import { useTableFilter } from '../hooks/useTableFilter';
 
-interface FilterChipsProps<T> {
-  columns: Column<T>[];
-}
+export function FilterChips<T>() {
+  const { state } = useTableContext<T>();
+  const { filters, removeFilter, clearFilters } = useTableFilter<T>();
 
-export function FilterChips<T>({ columns }: FilterChipsProps<T>) {
-  const { activeFilters, handleRemoveFilter, handleClearFilters } = useTableFilter<T>();
-
-  if (activeFilters.length === 0) {
+  if (Object.keys(filters).length === 0) {
     return null;
   }
 
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-      {activeFilters.map((filter, index) => (
-        <Chip
-          key={index}
-          label={`${columns.find((c) => c.id === filter.column)?.label || String(filter.column)} = ${filter.value}`}
-          onDelete={() => handleRemoveFilter(filter.column)}
-          color="primary"
-          variant="outlined"
-        />
-      ))}
-      <Chip
-        label="Clear filters"
-        onClick={handleClearFilters}
-        color="default"
-        variant="outlined"
-      />
+    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 1 }}>
+      {Object.entries(filters).map(([key, value]) => {
+        if (value === undefined || value === null || value === '') {
+          return null;
+        }
+
+        const column = state.columns.find((col) => col.id === key);
+        if (!column) {
+          return null;
+        }
+
+        return (
+          <Chip
+            key={key}
+            label={`${column.label}: ${Array.isArray(value) ? value.join(', ') : value}`}
+            onDelete={() => removeFilter(key as keyof T)}
+          />
+        );
+      })}
+      <Chip label="Clear filters" onClick={clearFilters} />
     </Box>
   );
 } 

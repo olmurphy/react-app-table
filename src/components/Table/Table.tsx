@@ -35,38 +35,38 @@ export function Table<T extends Record<string, any>>({
   width = '100%',
 }: Readonly<TableProps<T>>) {
   return (
-    <TableProvider initialSort={initialSort}>
+    <TableProvider 
+      data={data}
+      columns={columns}
+      initialSort={initialSort}
+      isServerSide={isServerSide}
+      loading={loading}
+      page={page}
+      pageSize={pageSize}
+      totalCount={totalCount}
+    >
       <Box>
         <TableToolbar
           tableName={tableName}
           onExport={onExport}
-          data={data}
         />
         <Box sx={{ display: 'flex', flexDirection: 'column', padding: '8px', gap: '8px' }}>
-          <SearchBar columns={columns} />
-          <FilterChips columns={columns} />
+          <SearchBar />
+          <FilterChips />
         </Box>
         <Box>
           <StyledTableContainer>
             <TableHeader
-              columns={columns}
               onSortChange={onSortChange}
             />
             <TableBody
-              data={data}
-              columns={columns}
               onRowClick={onRowClick}
               onEdit={onEdit}
               onDelete={onDelete}
-              loading={loading}
               rowGrouping={rowGrouping}
               aggregation={aggregation}
-              isServerSide={isServerSide}
             />
             <TableFooter
-              totalCount={totalCount}
-              page={page}
-              pageSize={pageSize}
               onPageChange={onPageChange}
               onPageSizeChange={onPageSizeChange}
             />

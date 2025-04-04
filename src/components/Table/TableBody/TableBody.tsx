@@ -3,85 +3,32 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
-import { Column } from '../Table.types';
+import { useTableContext } from '../contexts/TableContext';
 import { useTableSelection } from '../hooks/useTableSelection';
-import { useTableSort } from '../hooks/useTableSort';
-import { useTableFilter } from '../hooks/useTableFilter';
 
 interface TableBodyProps<T> {
-  data: T[];
-  columns: Column<T>[];
   onRowClick?: (row: T) => void;
   onEdit?: (row: T, field: keyof T, newValue: any) => void;
   onDelete?: (row: T) => void;
-  loading?: boolean;
   rowGrouping?: keyof T | ((row: T) => string);
   aggregation?: Record<keyof T, (values: T[keyof T][]) => any>;
-  isServerSide?: boolean;
 }
 
 export function TableBodyComponent<T>({
-  data,
-  columns,
   onRowClick,
   onEdit,
   onDelete,
-  loading,
   rowGrouping,
   aggregation,
-  isServerSide = false,
 }: TableBodyProps<T>) {
+  const { state, processedData } = useTableContext<T>();
   const { selected, handleSelectOneClick } = useTableSelection<T>();
-  const { sortState } = useTableSort<T>();
-  const { filters } = useTableFilter<T>();
 
-  // Process data based on filters and sorting
-  const processedData = React.useMemo(() => {
-    if (isServerSide) {
-      return data;
-    }
-
-    let filteredData = data;
-
-    // Apply filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        filteredData = filteredData.filter((row) => {
-          const rowValue = row[key as keyof T];
-
-          if (Array.isArray(value)) {
-            return value.includes(rowValue as string);
-          }
-
-          if (typeof rowValue === 'string' && typeof value === 'string') {
-            return rowValue.toLowerCase().includes(value.toLowerCase());
-          }
-
-          return rowValue === value;
-        });
-      }
-    });
-
-    // Apply sorting
-    return [...filteredData].sort((a, b) => {
-      const aValue = a[sortState.orderBy];
-      const bValue = b[sortState.orderBy];
-
-      if (bValue < aValue) {
-        return sortState.order === 'desc' ? -1 : 1;
-      }
-      if (bValue > aValue) {
-        return sortState.order === 'desc' ? 1 : -1;
-      }
-      return 0;
-    });
-  }, [data, filters, sortState, isServerSide]);
-
-  if (loading) {
+  if (state.loading) {
     return (
       <TableBody>
         <TableRow>
-          <TableCell colSpan={columns.length + 1} align="center">
+          <TableCell colSpan={state.columns.length + 1} align="center">
             Loading...
           </TableCell>
         </TableRow>
@@ -115,7 +62,7 @@ export function TableBodyComponent<T>({
                 }}
               />
             </TableCell>
-            {columns.map((column) => (
+            {state.columns.map((column) => (
               <TableCell key={String(column.id)}>{row[column.id]}</TableCell>
             ))}
           </TableRow>
