@@ -4,17 +4,24 @@ import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { RefreshIndicator } from "@src/components/Table/RefreshIndicator";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 type TableToolbarProps = {
   tableName: string;
-  onRefresh: () => void;
+  // onRefresh: () => void;
   onActionSelect: (action: string) => void;
-  lastRefreshTime: number;
+  // lastRefreshTime: number;
 };
 export function TableToolbar(props: Readonly<TableToolbarProps>) {
-  const { tableName, onRefresh, onActionSelect, lastRefreshTime } = props;
+  const { tableName, onActionSelect } = props;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [lastRefreshTime, setLastRefreshTime] = useState<number>(Date.now());
+
+  const handleRefresh = useCallback(() => {
+    setLastRefreshTime(Date.now());
+    // Implement refresh logic here
+    console.log("Refresh clicked");
+  }, []);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -49,7 +56,7 @@ export function TableToolbar(props: Readonly<TableToolbarProps>) {
           gap: "16px",
         }}
       >
-        <RefreshIndicator lastRefreshTime={lastRefreshTime} onRefresh={onRefresh} />
+        <RefreshIndicator lastRefreshTime={lastRefreshTime} onRefresh={handleRefresh} />
         <Button aria-controls="actions-menu" aria-haspopup="true" onClick={handleMenuOpen}>
           Actions
         </Button>

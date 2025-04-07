@@ -5,10 +5,9 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import { useTableSelection } from "../hooks";
+import { useTableContext } from "../contexts/TableContext";
 
 type TableFooterProps<T> = {
-  totalColumns: number;
-  totalCount: number;
   page: number;
   pageSize: number;
   handleChangePage: (event: unknown, newPage: number) => void;
@@ -16,13 +15,15 @@ type TableFooterProps<T> = {
 };
 
 export function TableFooter<T>(props: Readonly<TableFooterProps<T>>) {
+  const { state, dispatch } = useTableContext<T>();
+  
   const { getSelectedCount } = useTableSelection<T>();
-  const totalSelected = getSelectedCount();
+
 
   return (
     <TableFooterMUI>
       <TableRow>
-        <TableCell sx={{ width: "100%", py: 0}} colSpan={props.totalColumns + 1}>
+        <TableCell sx={{ width: "100%", py: 0}} colSpan={state.columns.length + 1}>
           <Box
             sx={{
               display: "flex",
@@ -40,13 +41,13 @@ export function TableFooter<T>(props: Readonly<TableFooterProps<T>>) {
           >
             <Box>
               <Typography color="inherit" variant="subtitle1" component="div">
-                {totalSelected} selected
+                {getSelectedCount()} selected
               </Typography>
             </Box>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={props.totalColumns}
-              count={props.totalCount}
+              colSpan={state.columns.length}
+              count={state.data.length}
               rowsPerPage={props.pageSize}
               page={props.page}
               slotProps={{

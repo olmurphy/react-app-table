@@ -1,9 +1,6 @@
 import Box from "@mui/material/Box";
-import Checkbox from "@mui/material/Checkbox";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TableProvider } from "./contexts/TableContext";
 import { StyledTableContainer } from "./styles/tableStyles";
@@ -13,7 +10,7 @@ import { FilterChips } from "./TableHeader/FilterChips";
 import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
-import { SelectionCheckbox } from "./components";
+import { TableRow } from "./TableRow/TableRow";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -82,13 +79,6 @@ export function CustomTable<T extends Record<string, any>>({
   const resizingColumn = useRef<keyof T | null>(null);
   const startX = useRef<number>(0);
   const startWidth = useRef<number>(0);
-  const [lastRefreshTime, setLastRefreshTime] = useState<number>(Date.now());
-
-  const handleRefresh = useCallback(() => {
-    setLastRefreshTime(Date.now());
-    // Implement refresh logic here
-    console.log("Refresh clicked");
-  }, []);
 
   const handleActionSelect = (action: string) => {
     // Implement action logic here
@@ -179,30 +169,6 @@ export function CustomTable<T extends Record<string, any>>({
       .slice((page - 1) * pageSize, page * pageSize);
   }, [data, filters, sortState.order, sortState.orderBy, isServerSide, page, pageSize]);
 
-  // Handle filter change
-  const handleFilterChangeLocal = useCallback(
-    (property: keyof T, value: string | number | boolean | string[]) => {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        [property]: value,
-      }));
-      if (onFilterChange) {
-        onFilterChange({ ...filters, [property]: value });
-      }
-    },
-    [filters, onFilterChange]
-  );
-
-  // Handle row click
-  const handleRowClickLocal = useCallback(
-    (event: React.MouseEvent<unknown>, row: T) => {
-      if (onRowClick) {
-        onRowClick(row);
-      }
-    },
-    [onRowClick]
-  );
-
   // Handle edit
   const handleEditLocal = useCallback(
     (row: T, field: keyof T, newValue: any) => {
@@ -239,7 +205,7 @@ export function CustomTable<T extends Record<string, any>>({
     });
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_: unknown, newPage: number) => {
     if (onPageChange) {
       onPageChange(newPage);
     }
@@ -252,7 +218,7 @@ export function CustomTable<T extends Record<string, any>>({
   };
 
   return (
-    <TableProvider 
+    <TableProvider
       data={data}
       columns={columns}
       isServerSide={isServerSide}
@@ -262,12 +228,7 @@ export function CustomTable<T extends Record<string, any>>({
       totalCount={totalCount}
     >
       <Box>
-        <TableToolbar
-          tableName={tableName}
-          onRefresh={handleRefresh}
-          onActionSelect={handleActionSelect}
-          lastRefreshTime={lastRefreshTime}
-        />
+        <TableToolbar tableName={tableName} onActionSelect={handleActionSelect} />
         <Box
           sx={{
             display: "flex",
@@ -278,7 +239,6 @@ export function CustomTable<T extends Record<string, any>>({
         >
           <SearchBar />
           <FilterChips />
-          
         </Box>
         <Box>
           <StyledTableContainer>
@@ -295,31 +255,11 @@ export function CustomTable<T extends Record<string, any>>({
                 handleResizeStart={handleResizeStart}
               />
               <TableBody>
-                {processedData.map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
-
-                  return (
-                    <TableRow
-                      hover
-                      onClick={(event) => handleRowClickLocal(event, row)}
-                      key={row.id}
-                      role="checkbox"
-                      tabIndex={-1}
-                      sx={{ cursor: "pointer", height: "40px" }}
-                    >
-                      <TableCell padding="checkbox">
-                        <SelectionCheckbox row={row} />
-                      </TableCell>
-                      {columns.map((column) => {
-                        return <TableCell key={column.id as number}>{row[column.id as keyof T]}</TableCell>;
-                      })}
-                    </TableRow>
-                  );
+                {processedData.map((row) => {
+                  return <TableRow key={row.id} row={row} />;
                 })}
               </TableBody>
               <TableFooter
-                totalColumns={columns.length}
-                totalCount={totalCount || 0}
                 page={page - 1}
                 pageSize={pageSize}
                 handleChangePage={handleChangePage}
@@ -332,94 +272,3 @@ export function CustomTable<T extends Record<string, any>>({
     </TableProvider>
   );
 }
-
-// export function Table<T extends Record<string, any>>(props: TableProps<T>) {
-//   const {
-//     data,
-//     columns,
-//     isServerSide = false,
-//     loading = false,
-//     // ... other props destructuring
-//   } = props;
-
-//   const { sortState, handleRequestSort } = useTableSort<T>({
-//     initialSort: props.initialSort,
-//     onSortChange: props.onSortChange,
-//   });
-
-//   const contextValue = {
-//     columns,
-//     data,
-//     isServerSide,
-//     loading,
-//     // ... other shared values
-//   };
-
-//   return (
-//     <TableProvider value={contextValue}>
-//       <Box>
-//         <SearchBar />
-//         <FilterChips />
-//         <StyledTableContainer>
-//           <TableHeader
-//             onRequestSort={handleRequestSort}
-//             sortState={sortState}
-//           />
-//           <TableBody />
-//           <TableFooter />
-//         </StyledTableContainer>
-//       </Box>
-//     </TableProvider>
-//   );
-// }
-
-// export function CustomTable<T extends Record<string, any>>({
-//   tableName,
-//   data,
-//   columns,
-//   // ... other props
-// }: Readonly<TableProps<T>>) {
-//   const { sortState, handleRequestSort } = useTableSort({
-//     initialSort,
-//     onSortChange,
-//   });
-
-//   const {
-//     filters,
-//     activeFilters,
-//     handleFilterChange,
-//     handleRemoveFilter,
-//     handleClearFilters,
-//   } = useTableFilter({
-//     onFilterChange,
-//   });
-
-//   const { selected, handleSelectAllClick, handleSelectOneClick } = useTableSelection({
-//     data,
-//     onSelectionChange,
-//   });
-
-//   const { columnWidths, handleResizeStart } = useTableResize<T>();
-
-//   const {
-//     searchTerm,
-//     searchAnchorEl,
-//     searchInputRef,
-//     handleSearchChange,
-//     handleSearchFocus,
-//     handleFilterSelect,
-//     handleSearchClose,
-//   } = useTableSearch({
-//     columns,
-//     onFilterChange: handleFilterChange,
-//   });
-
-//   const { handleChangePage, handleChangeRowsPerPage } = useTablePagination({
-//     page,
-//     pageSize,
-//     onPageChange,
-//     onPageSizeChange,
-//   });
-
-//   // ... rest of the component
-// }
