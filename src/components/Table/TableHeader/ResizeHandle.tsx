@@ -1,6 +1,16 @@
 import { styled } from "@mui/material/styles";
+import React from "react";
 
-export const ResizeHandle = styled("div")(({ theme }) => ({
+interface ResizeHandleProps {
+  onMouseDown: (event: React.MouseEvent) => void;
+  columnId: string | number;
+  className?: string;
+}
+
+/**
+ * Styled component for the resize handle visual appearance
+ */
+const StyledResizeHandle = styled("div")(({ theme }) => ({
   position: "absolute",
   right: 0,
   top: "10px",
@@ -17,3 +27,18 @@ export const ResizeHandle = styled("div")(({ theme }) => ({
     background: theme.palette.primary.main,
   },
 }));
+
+/**
+ * ResizeHandle component for table column resizing
+ * Provides a visual handle that users can drag to resize columns
+ */
+export const ResizeHandle: React.FC<ResizeHandleProps> = ({ onMouseDown, columnId, className }) => {
+  return (
+    <StyledResizeHandle
+      onMouseDown={onMouseDown}
+      data-column-id={columnId}
+      className={className}
+      aria-label={`Resize column ${columnId}`}
+    />
+  );
+};

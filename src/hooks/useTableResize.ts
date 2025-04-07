@@ -1,5 +1,9 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
+/**
+ * Custom hook for handling table column resizing
+ * @returns Object containing column widths and resize handlers
+ */
 export function useTableResize<T>() {
   const [columnWidths, setColumnWidths] = useState<Record<keyof T, number>>({});
   const resizingColumn = useRef<keyof T | null>(null);
@@ -24,7 +28,7 @@ export function useTableResize<T>() {
     if (!resizingColumn.current) return;
 
     const diff = event.clientX - startX.current;
-    const newWidth = Math.max(100, startWidth.current + diff);
+    const newWidth = Math.max(100, startWidth.current + diff); // Minimum width of 100px
 
     setColumnWidths((prev) => ({
       ...prev,
@@ -39,6 +43,7 @@ export function useTableResize<T>() {
     document.removeEventListener('mouseup', handleResizeEnd);
   }, [handleResize]);
 
+  // Clean up event listeners on unmount
   useEffect(() => {
     return () => {
       document.removeEventListener('mousemove', handleResize);

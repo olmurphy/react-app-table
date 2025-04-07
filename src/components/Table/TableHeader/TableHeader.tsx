@@ -3,7 +3,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import { ResizeHandle } from "./ResizeHandle";
+import { ColumnResizer } from "./ColumnResizer";
 import visuallyHidden from "@mui/utils/visuallyHidden";
 import { Column, Order } from "../Table.types";
 import { useTableContext } from "../contexts/TableContext";
@@ -72,9 +72,9 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
                   </Box>
                 ) : null}
               </TableSortLabel>
-              <ResizeHandle
-                onMouseDown={(e) => handleResizeStart(e, column.id)}
+              <ColumnResizer
                 columnId={column.id}
+                onResizeStart={handleResizeStart}
               />
             </Box>
           </TableCell>

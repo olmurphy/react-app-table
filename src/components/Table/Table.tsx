@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { TableProvider } from "./contexts/TableContext";
 import { StyledTableContainer } from "./styles/tableStyles";
 import { Order, SortState, TableProps } from "./Table.types";
@@ -11,6 +11,7 @@ import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
 import { TableRow } from "./TableRow/TableRow";
+import { useTableResize } from "../../hooks/useTableResize";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -75,55 +76,14 @@ export function CustomTable<T extends Record<string, any>>({
     order: initialSort?.order || "asc",
   }));
   const [filters, setFilters] = useState<Partial<Record<keyof T, string | number | boolean | string[]>>>({});
-  const [columnWidths, setColumnWidths] = useState<Record<keyof T, string | number>>({});
-  const resizingColumn = useRef<keyof T | null>(null);
-  const startX = useRef<number>(0);
-  const startWidth = useRef<number>(0);
+  
+  // Use the custom hook for column resizing
+  const { columnWidths, handleResizeStart } = useTableResize<T>();
 
   const handleActionSelect = (action: string) => {
     // Implement action logic here
     // console.log(`Action selected: ${action}`);
   };
-
-  const handleResizeStart = useCallback(
-    (event: React.MouseEvent, columnId: keyof T) => {
-      event.preventDefault();
-      resizingColumn.current = columnId;
-      startX.current = event.clientX;
-      startWidth.current = columnWidths[columnId] || 100;
-
-      document.body.style.cursor = "col-resize";
-      document.addEventListener("mousemove", handleResize);
-      document.addEventListener("mouseup", handleResizeEnd);
-    },
-    [columnWidths]
-  );
-
-  const handleResize = useCallback((event: MouseEvent) => {
-    if (!resizingColumn.current) return;
-
-    const diff = event.clientX - startX.current;
-    const newWidth = Math.max(100, startWidth.current + diff); // Minimum width of 100px
-
-    setColumnWidths((prev) => ({
-      ...prev,
-      [resizingColumn.current!]: newWidth,
-    }));
-  }, []);
-
-  const handleResizeEnd = useCallback(() => {
-    resizingColumn.current = null;
-    document.body.style.cursor = "";
-    document.removeEventListener("mousemove", handleResize);
-    document.removeEventListener("mouseup", handleResizeEnd);
-  }, [handleResize]);
-
-  useEffect(() => {
-    return () => {
-      document.removeEventListener("mousemove", handleResize);
-      document.removeEventListener("mouseup", handleResizeEnd);
-    };
-  }, [handleResize, handleResizeEnd]);
 
   // Debounced sort handler for better performance
   const debouncedSortChange = useMemo(
