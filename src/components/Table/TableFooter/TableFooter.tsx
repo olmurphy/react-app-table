@@ -4,9 +4,9 @@ import TableCell from "@mui/material/TableCell";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
+import { useTableSelection } from "../hooks";
 
-type TableFooterProps = {
-  totalSelected: number;
+type TableFooterProps<T> = {
   totalColumns: number;
   totalCount: number;
   page: number;
@@ -15,7 +15,10 @@ type TableFooterProps = {
   handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export function TableFooter(props: Readonly<TableFooterProps>) {
+export function TableFooter<T>(props: Readonly<TableFooterProps<T>>) {
+  const { getSelectedCount } = useTableSelection<T>();
+  const totalSelected = getSelectedCount();
+
   return (
     <TableFooterMUI>
       <TableRow>
@@ -37,7 +40,7 @@ export function TableFooter(props: Readonly<TableFooterProps>) {
           >
             <Box>
               <Typography color="inherit" variant="subtitle1" component="div">
-                {props.totalSelected} selected
+                {totalSelected} selected
               </Typography>
             </Box>
             <TablePagination
@@ -51,10 +54,9 @@ export function TableFooter(props: Readonly<TableFooterProps>) {
                   inputProps: {
                     "aria-label": "rows per page",
                   },
-                  native: true,
                 },
               }}
-              onPageChange={props.handleChangePage}
+              onPageChange={(_, newPage) => props.handleChangePage(_, newPage)}
               onRowsPerPageChange={props.handleChangeRowsPerPage}
             />
           </Box>

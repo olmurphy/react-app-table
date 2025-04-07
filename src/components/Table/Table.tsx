@@ -13,6 +13,7 @@ import { FilterChips } from "./TableHeader/FilterChips";
 import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
+import { SelectionCheckbox } from "./components";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -72,7 +73,6 @@ export function CustomTable<T extends Record<string, any>>({
   height = "100%",
   width = "100%",
 }: Readonly<TableProps<T>>) {
-  const [selected, setSelected] = useState<readonly T[]>([]);
   const [sortState, setSortState] = useState<SortState<T>>(() => ({
     orderBy: initialSort?.orderBy || columns[0].id,
     order: initialSort?.order || "asc",
@@ -83,7 +83,6 @@ export function CustomTable<T extends Record<string, any>>({
   const startX = useRef<number>(0);
   const startWidth = useRef<number>(0);
   const [lastRefreshTime, setLastRefreshTime] = useState<number>(Date.now());
-
 
   const handleRefresh = useCallback(() => {
     setLastRefreshTime(Date.now());
@@ -194,59 +193,6 @@ export function CustomTable<T extends Record<string, any>>({
     [filters, onFilterChange]
   );
 
-  // Handle selection change
-  const handleSelectAllClick = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.checked) {
-        setSelected(data);
-        if (onSelectionChange) {
-          onSelectionChange(data);
-        }
-        return;
-      }
-      setSelected([]);
-      if (onSelectionChange) {
-        onSelectionChange([]);
-      }
-    },
-    [data, onSelectionChange]
-  );
-
-  const handleSelectOneClick = useCallback(
-    (_: React.ChangeEvent<HTMLInputElement>, row: T) => {
-      const selectedIndex = selected.indexOf(row);
-      let newSelected: T[] = [];
-
-      if (selectedIndex === -1) {
-        newSelected = newSelected.concat(selected, row);
-      } else if (selectedIndex === 0) {
-        newSelected = newSelected.concat(selected.slice(1));
-      } else if (selectedIndex === selected.length - 1) {
-        newSelected = newSelected.concat(selected.slice(0, -1));
-      } else if (selectedIndex > 0) {
-        newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
-      }
-
-      setSelected(newSelected);
-      if (onSelectionChange) {
-        onSelectionChange(newSelected);
-      }
-    },
-    [selected, onSelectionChange]
-  );
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    if (onPageChange) {
-      onPageChange(newPage);
-    }
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (onPageSizeChange) {
-      onPageSizeChange(parseInt(event.target.value, 10));
-    }
-  };
-
   // Handle row click
   const handleRowClickLocal = useCallback(
     (event: React.MouseEvent<unknown>, row: T) => {
@@ -293,6 +239,17 @@ export function CustomTable<T extends Record<string, any>>({
     });
   };
 
+  const handleChangePage = (event: unknown, newPage: number) => {
+    if (onPageChange) {
+      onPageChange(newPage);
+    }
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (onPageSizeChange) {
+      onPageSizeChange(parseInt(event.target.value, 10));
+    }
+  };
 
   return (
     <TableProvider 
@@ -327,9 +284,9 @@ export function CustomTable<T extends Record<string, any>>({
           <StyledTableContainer>
             <Table>
               <TableHeader
-                numSelected={selected.length}
+                numSelected={0}
                 onRequestSort={handleRequestSort}
-                onSelectAllClick={handleSelectAllClick}
+                onSelectAllClick={() => {}}
                 order={sortState.order}
                 orderBy={sortState.orderBy}
                 rowCount={data.length}
@@ -339,30 +296,19 @@ export function CustomTable<T extends Record<string, any>>({
               />
               <TableBody>
                 {processedData.map((row, index) => {
-                  const isItemSelected = selected.includes(row);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleSelectOneClick(event, row)}
+                      onClick={(event) => handleRowClickLocal(event, row)}
                       key={row.id}
                       role="checkbox"
-                      aria-checked={isItemSelected}
                       tabIndex={-1}
-                      selected={isItemSelected}
                       sx={{ cursor: "pointer", height: "40px" }}
                     >
                       <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          slotProps={{
-                            input: {
-                              "aria-label": "Checkbox demo",
-                            },
-                          }}
-                        />
+                        <SelectionCheckbox row={row} />
                       </TableCell>
                       {columns.map((column) => {
                         return <TableCell key={column.id as number}>{row[column.id as keyof T]}</TableCell>;
@@ -372,7 +318,6 @@ export function CustomTable<T extends Record<string, any>>({
                 })}
               </TableBody>
               <TableFooter
-                totalSelected={selected.length}
                 totalColumns={columns.length}
                 totalCount={totalCount || 0}
                 page={page - 1}

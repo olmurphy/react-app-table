@@ -1,5 +1,4 @@
 import Box from "@mui/material/Box";
-import Checkbox from "@mui/material/Checkbox";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -8,6 +7,7 @@ import { ResizeHandle } from "./ResizeHandle";
 import visuallyHidden from "@mui/utils/visuallyHidden";
 import { Column, Order } from "../Table.types";
 import { useTableContext } from "../contexts/TableContext";
+import { SelectionCheckbox } from "../components";
 
 type TableHeader<T> = {
   numSelected: number;
@@ -24,7 +24,6 @@ type TableHeader<T> = {
 export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
   const { state, dispatch } = useTableContext<T>();
   const {
-    onSelectAllClick,
     order,
     orderBy,
     numSelected,
@@ -34,6 +33,7 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
     columnWidths,
     handleResizeStart,
   } = props;
+  
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
     const isAsc = state.sortState.orderBy === property && state.sortState.order === "asc";
     dispatch({
@@ -50,40 +50,16 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            slotProps={{
-              input: {
-                "aria-label": "Checkbox demo",
-              },
-            }}
-          />
+          <SelectionCheckbox isHeader={true} />
         </TableCell>
-        {state.columns.map((column) => (
+        {columns.map((column) => (
           <TableCell
-            key={String(column.id)}
+            key={column.id as number}
             align={column.align || "left"}
-            padding={column.disabledPadding ? "none" : "normal"}
             sortDirection={orderBy === column.id ? order : false}
-            sx={{
-              position: "relative",
-              width: columnWidths[column.id] || "auto",
-              minWidth: "100px", // Prevent columns from becoming too narrow
-              fontSize: "0.875rem",
-              padding: "4px 24px 4px 8px",
-            }}
+            style={{ width: columnWidths[column.id] || "auto" }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between", // Pushes label and resize handle apart
-                pr: 2, // Additional right padding for label
-              }}
-            >
+            <Box sx={{ position: "relative" }}>
               <TableSortLabel
                 active={orderBy === column.id}
                 direction={orderBy === column.id ? order : "asc"}
@@ -97,11 +73,8 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
                 ) : null}
               </TableSortLabel>
               <ResizeHandle
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleResizeStart(e, column.id);
-                }}
+                onMouseDown={(e) => handleResizeStart(e, column.id)}
+                columnId={column.id}
               />
             </Box>
           </TableCell>
