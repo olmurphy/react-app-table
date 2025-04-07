@@ -12,6 +12,23 @@ export const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   maxWidth: "100%",
   display: "flex",
   flexDirection: "column",
+  overflowX: "auto",
+  overflowY: "auto",
+  WebkitOverflowScrolling: "touch",
+  scrollbarWidth: "thin",
+  "&::-webkit-scrollbar": {
+    width: "8px",
+    height: "8px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: theme.palette.mode === "light" 
+      ? "rgba(0, 0, 0, 0.2)" 
+      : "rgba(255, 255, 255, 0.2)",
+    borderRadius: "4px",
+  },
+  "&::-webkit-scrollbar-track": {
+    backgroundColor: "transparent",
+  },
 
   "& .MuiTableRow-root": {
     "&:hover": {

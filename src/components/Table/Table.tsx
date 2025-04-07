@@ -78,7 +78,12 @@ export function CustomTable<T extends Record<string, any>>({
   const [filters, setFilters] = useState<Partial<Record<keyof T, string | number | boolean | string[]>>>({});
   
   // Use the custom hook for column resizing
-  const { columnWidths, handleResizeStart } = useTableResize<T>();
+  const { columnWidths, handleResizeStart, initializeColumnWidths } = useTableResize<T>();
+
+  // Initialize column widths when columns change
+  useEffect(() => {
+    initializeColumnWidths(columns);
+  }, [columns, initializeColumnWidths]);
 
   const handleActionSelect = (action: string) => {
     // Implement action logic here
