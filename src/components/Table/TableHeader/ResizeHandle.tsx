@@ -1,5 +1,4 @@
 import { styled } from "@mui/material/styles";
-import React from "react";
 
 interface ResizeHandleProps {
   onMouseDown: (event: React.MouseEvent) => void;
@@ -27,6 +26,7 @@ const StyledResizeHandle = styled("div")(({ theme }) => ({
     background: theme.palette.primary.main,
   },
 }));
+
 
 /**
  * ResizeHandle component for table column resizing
