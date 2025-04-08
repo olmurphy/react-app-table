@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import React, { useCallback } from "react";
-import { useTableResize } from "../../hooks/useTableResize";
 import { TableProvider } from "./contexts/TableContext";
 import { StyledTableContainer } from "./styles/tableStyles";
 import { TableProps } from "./Table.types";
@@ -11,7 +10,6 @@ import { FilterChips } from "./TableHeader/FilterChips";
 import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
-import { TableFilterNotifier } from "./TableFilterNotifier";
 
 export function CustomTable<T extends Record<string, any>>({
   tableName,
@@ -37,8 +35,6 @@ export function CustomTable<T extends Record<string, any>>({
   height = "100%",
   width = "100%",
 }: Readonly<TableProps<T>>) {
-  const { columnWidths, handleResizeStart } = useTableResize<T>();
-
   const handleActionSelect = (action: string) => {
     // Implement action logic here
     // console.log(`Action selected: ${action}`);
@@ -84,7 +80,6 @@ export function CustomTable<T extends Record<string, any>>({
       pageSize={pageSize}
       totalCount={totalCount}
     >
-      <TableFilterNotifier onFilterChange={onFilterChange} />
       <Box>
         <TableToolbar tableName={tableName} onActionSelect={handleActionSelect} />
         <Box
@@ -100,13 +95,8 @@ export function CustomTable<T extends Record<string, any>>({
         </Box>
         <Box>
           <StyledTableContainer>
-            <Table
-              sx={{
-                overflowX: "auto",
-                width: "max-content",
-              }}
-            >
-              <TableHeader columnWidths={columnWidths} handleResizeStart={handleResizeStart} />
+            <Table sx={{ width: "max-content" }}>
+              <TableHeader />
               <TableBody />
             </Table>
           </StyledTableContainer>

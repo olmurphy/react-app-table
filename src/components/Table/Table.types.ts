@@ -23,7 +23,7 @@ export interface SortState<T> {
 
 export interface SearchFilter<T> {
   column: keyof T;
-  value: string;
+  value: any;
 }
 
 export interface TableProps<T> {

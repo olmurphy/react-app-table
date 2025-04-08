@@ -6,6 +6,7 @@ import light from "../../assets/icons/mode_light.svg";
 import slack from "../../assets/icons/slack.svg";
 import { useTheme } from "../../contexts/themeContext";
 import styles from "./Header.module.css";
+import { LandingPageCards } from "@src/components/LandingCards/LandingCardConfig";
 
 export function Header() {
   const intl = useIntl();
@@ -31,15 +32,11 @@ export function Header() {
           </h2>
           <div>
             <nav className={styles["nav-links"]}>
-              <a href="/initiatives" className={`${styles["nav-link"]} margin-1-l margin-1-r`}>
-                Initiatives
-              </a>
-              <a href="/company-domains" className={`${styles["nav-link"]} margin-1-l margin-1-r`}>
-                Company Domains
-              </a>
-              <a href="/editor" className={`${styles["nav-link"]} margin-1-l margin-1-r`}>
-                Editor
-              </a>
+              {LandingPageCards.map((card) => (
+                <a key={card.link} href={card.link} className={`${styles["nav-link"]} margin-1-l margin-1-r`}>
+                  {card.title}
+                </a>
+              ))}
             </nav>
           </div>
 

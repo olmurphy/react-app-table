@@ -1,15 +1,12 @@
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import { useTableContext } from "../contexts/TableContext";
+import { useEffect } from "react";
 
 export function FilterChips<T>() {
   const { state, dispatch } = useTableContext<T>();
 
   function handleClearFilters() {
-    dispatch({
-      type: "CLEAR_ALL_ACTIVE_FILTERS",
-    });
-    
     dispatch({
       type: "CLEAR_ALL_FILTERS",
     });
@@ -17,23 +14,24 @@ export function FilterChips<T>() {
 
   function handleRemoveFilter(column: keyof T) {
     dispatch({
-      type: "CLEAR_ACTIVE_FILTER",
+      type: "CLEAR_FILTER",
       payload: { column },
-    });
-    
-    dispatch({
-      type: "SET_FILTERS",
-      payload: { field: column, value: "" },
     });
   }
 
-  if (state.activeFilters.length === 0) {
+  if (state.filters.length === 0) {
     return null;
   }
 
+
+  useEffect(() => {
+    console.log(state.filters)
+  }, [state.filters])
+
+
   return (
     <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-      {state.activeFilters.map((filter) => (
+      {state.filters.map((filter) => (
         <Chip
           key={String(filter.column)}
           label={`${state.columns.find((c) => c.id === filter.column)?.label || String(filter.column)} = ${

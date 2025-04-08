@@ -1,11 +1,10 @@
-import React from 'react';
-import ClickAwayListener from '@mui/material/ClickAwayListener';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import Paper from '@mui/material/Paper';
-import Popper from '@mui/material/Popper';
-import { useTableContext } from '../contexts/TableContext';
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import Paper from "@mui/material/Paper";
+import Popper from "@mui/material/Popper";
+import { useTableContext } from "../contexts/TableContext";
 
 interface SearchFilterDropdownProps<T> {
   anchorEl: HTMLElement | null;
@@ -32,15 +31,10 @@ export function SearchFilterDropdown<T>({
   }
 
   return (
-    <Popper
-      open={Boolean(anchorEl)}
-      anchorEl={anchorEl}
-      placement="bottom-start"
-      style={{ zIndex: 1300 }}
-    >
+    <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} placement="bottom-start" style={{ zIndex: 1300 }}>
       <ClickAwayListener onClickAway={onClose}>
         <Paper sx={{ width: 300, maxHeight: 400, overflow: "auto" }}>
-        <List>
+          <List>
             {filteredColumns.map((column) => (
               <ListItem key={String(column.id)} disablePadding>
                 <ListItemButton
@@ -59,4 +53,4 @@ export function SearchFilterDropdown<T>({
       </ClickAwayListener>
     </Popper>
   );
-} 
+}

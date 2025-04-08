@@ -22,30 +22,31 @@ type LandingPageCardsType = {
 
 export const LandingPageCards: LandingPageCardsType[] = [
   {
-    title: "Initiatives",
+    title: "Summary Dashboards",
     imgSrc: initiattivesIcon,
     imgSrcFilled: initiattivesFilledIcon,
     imgSrcDark: initiattivesDarkIcon,
     imgSrcDarkFilled: initiattivesDarkFilledIcon,
-    link: "/",
-    description: "Architecture / Design of Enterprise Top Programs / Other initiatives.",
-    links: [
-      { label: "View Initiatives", link: "google.com" },
-      {
-        label: "Onboard Initiative",
-        link: "/initiatives",
-      },
-    ],
+    link: "/summary-dashboards",
+    description: "Coming Soon.",
   },
   {
-    title: "Company Domains",
+    title: "Admin Screens",
     imgSrc: companyDomainIcons,
     imgSrcFilled: companyDomainFilledIcon,
     imgSrcDark: companyDomainDarkIcon,
     imgSrcDarkFilled: companyDomainDarkFilledIcon,
-    link: "/company-domains/",
+    link: "/admin-screens/",
     description: "Architecture / Design of Platforms within well defined company domains / boundaries.",
-    links: [{ label: "View Company Domains", link: "/" }],
+  },
+  {
+    title: "Additional Resources",
+    imgSrc: companyDomainIcons,
+    imgSrcFilled: companyDomainFilledIcon,
+    imgSrcDark: companyDomainDarkIcon,
+    imgSrcDarkFilled: companyDomainDarkFilledIcon,
+    link: "/additional-resources/",
+    description: "More sources about the EA Playbook Assistant and other resources.",
   },
   {
     title: "Editor",

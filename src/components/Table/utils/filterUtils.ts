@@ -1,4 +1,4 @@
-import { SearchFilter } from '../Table.types';
+import { SearchFilter } from "../Table.types";
 
 /**
  * Applies filters to data with AND logic
@@ -15,28 +15,26 @@ export function applyFilters<T>(data: T[], filters: SearchFilter<T>[]): T[] {
     // Apply all filters with AND logic
     return filters.every((filter) => {
       const columnValue = row[filter.column];
-      
+
       // Handle different data types
-      if (typeof columnValue === 'string') {
+      if (typeof columnValue === "string") {
         return columnValue.toLowerCase().includes(filter.value.toLowerCase());
-      } else if (typeof columnValue === 'number') {
+      } else if (typeof columnValue === "number") {
         // Try to parse the filter value as a number
         const numericValue = parseFloat(filter.value);
         return !isNaN(numericValue) && columnValue === numericValue;
-      } else if (typeof columnValue === 'boolean') {
+      } else if (typeof columnValue === "boolean") {
         // Handle boolean values
         return String(columnValue).toLowerCase() === filter.value.toLowerCase();
       } else if (Array.isArray(columnValue)) {
         // Handle array values
-        return columnValue.some(item => 
-          String(item).toLowerCase().includes(filter.value.toLowerCase())
-        );
+        return columnValue.some((item) => String(item).toLowerCase().includes(filter.value.toLowerCase()));
       } else if (columnValue instanceof Date) {
         // Handle date values
         const dateValue = new Date(filter.value);
         return !isNaN(dateValue.getTime()) && columnValue.getTime() === dateValue.getTime();
       }
-      
+
       // Default case: convert to string and compare
       return String(columnValue).toLowerCase().includes(filter.value.toLowerCase());
     });
@@ -60,4 +58,4 @@ export function applySearch<T>(data: T[], searchTerm: string, searchField: keyof
     const value = row[searchField];
     return String(value).toLowerCase().includes(term);
   });
-} 
+}
