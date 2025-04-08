@@ -5,6 +5,8 @@ import { useTheme } from "@src/contexts/themeContext";
 import styles from "@src/pages/AdminScreen/AdminScreen.module.css";
 import { useState } from "react";
 import { data } from "../CompanyDomain/data";
+import Sidebar, { SidebarItem } from "@src/components/Sidebar/Sidebar";
+import { Bell, Home, Settings, User } from "lucide-react";
 
 export type DataRow = {
   id: number;
@@ -36,24 +38,40 @@ export function AdminScreenPage() {
   };
   return (
     <div className={`${styles.container} ${styles.variables}`}>
-      <BreadCrumbs />
-      Admin Screen Page
       <div
+        className={`${styles.sidebarContainer}`}
         style={{
-          overflowX: "auto",
-          width: "1000px",
+          display: "flex",
+          height: "100vh",
         }}
       >
-        <CustomTable<DataRow>
-          tableName={"Company Domain"}
-          data={data}
-          columns={columns}
-          page={page}
-          pageSize={pageSize}
-          totalCount={totalCount}
-          onPageChange={handlePageChange}
-          onPageSizeChange={handleRowsPerChange}
-        />
+        <Sidebar>
+          <SidebarItem icon={<Home />} text="Home" active />
+          <SidebarItem icon={<Settings />} text="Settings" />
+          <SidebarItem icon={<User />} text="Profile" />
+          <SidebarItem icon={<Bell />} text="Notifications" alert />
+        </Sidebar>
+      </div>
+      <div>
+        <BreadCrumbs />
+        Admin Screen Page
+        <div
+          style={{
+            overflowX: "auto",
+            width: "1000px",
+          }}
+        >
+          <CustomTable<DataRow>
+            tableName={"Company Domain"}
+            data={data}
+            columns={columns}
+            page={page}
+            pageSize={pageSize}
+            totalCount={totalCount}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleRowsPerChange}
+          />
+        </div>
       </div>
     </div>
   );

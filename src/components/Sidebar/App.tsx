@@ -1,6 +1,5 @@
 import { Bell, Home, User, Settings } from "lucide-react";
 import Sidebar, { SidebarItem } from "./Sidebar";
-import DataGridDemo from "./table";
 
 function App() {
 
@@ -25,7 +24,7 @@ function App() {
         </Sidebar>
       </div>
 
-      <DataGridDemo />
+      {/* <DataGridDemo /> */}
     </div>
   )
 }
