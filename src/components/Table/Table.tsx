@@ -1,18 +1,16 @@
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import { useTableResize } from "../../hooks/useTableResize";
 import { TableProvider } from "./contexts/TableContext";
 import { StyledTableContainer } from "./styles/tableStyles";
-import { Order, SortState, TableProps } from "./Table.types";
+import { TableProps } from "./Table.types";
+import { TableBody } from "./TableBody/TableBody";
 import { TableFooter } from "./TableFooter/TableFooter";
 import { FilterChips } from "./TableHeader/FilterChips";
 import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
-import { TableRow } from "./TableRow/TableRow";
-import { useTableSort } from "./hooks";
 
 export function CustomTable<T extends Record<string, any>>({
   tableName,
@@ -38,13 +36,6 @@ export function CustomTable<T extends Record<string, any>>({
   height = "100%",
   width = "100%",
 }: Readonly<TableProps<T>>) {
-  const [sortState, setSortState] = useState<SortState<T>>(() => ({
-    orderBy: initialSort?.orderBy || columns[0].id,
-    order: initialSort?.order || "asc",
-  }));
-  const [filters, setFilters] = useState<Partial<Record<keyof T, string | number | boolean | string[]>>>({});
-
-  // Use the custom hook for column resizing
   const { columnWidths, handleResizeStart } = useTableResize<T>();
 
   const handleActionSelect = (action: string) => {
@@ -52,52 +43,6 @@ export function CustomTable<T extends Record<string, any>>({
     // console.log(`Action selected: ${action}`);
   };
 
-  // Use the custom hook for sorting
-  const { handleRequestSort, getSortedData, createDebouncedSortHandler } = useTableSort<T>();
-
-  // Debounced sort handler for better performance
-  const debouncedSortChange = useMemo(
-    () =>
-      createDebouncedSortHandler((property: keyof T, order: Order) => {
-        if (onSortChange) {
-          onSortChange(property, order);
-        }
-      }),
-    [onSortChange, createDebouncedSortHandler]
-  );
-
-  // Memoized filtered and sorted data
-  const processedData = useMemo(() => {
-    if (isServerSide) {
-      return data;
-    }
-
-    let filteredData = data;
-
-    // Apply filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        filteredData = filteredData.filter((row) => {
-          const rowValue = row[key as keyof T];
-
-          if (Array.isArray(value)) {
-            return value.includes(rowValue as string); // Handle select/multiple filters
-          }
-
-          if (typeof rowValue === "string" && typeof value === "string") {
-            return rowValue.toLowerCase().includes(value.toLowerCase());
-          }
-
-          return rowValue === value;
-        });
-      }
-    });
-
-    // Apply sorting & pagination
-    return getSortedData(filteredData).slice((page - 1) * pageSize, page * pageSize);
-  }, [data, filters, sortState.order, sortState.orderBy, isServerSide, page, pageSize, getSortedData]);
-
-  // Handle edit
   const handleEditLocal = useCallback(
     (row: T, field: keyof T, newValue: any) => {
       if (onEdit) {
@@ -107,7 +52,6 @@ export function CustomTable<T extends Record<string, any>>({
     [onEdit]
   );
 
-  //Handle delete
   const handleDeleteLocal = useCallback(
     (row: T) => {
       if (onDelete) {
@@ -116,13 +60,6 @@ export function CustomTable<T extends Record<string, any>>({
     },
     [onDelete]
   );
-
-  // Clean up debounce on unmount
-  useEffect(() => {
-    return () => {
-      debouncedSortChange.cancel();
-    };
-  }, [debouncedSortChange]);
 
   const handleChangePage = (_: unknown, newPage: number) => {
     if (onPageChange) {
@@ -167,18 +104,8 @@ export function CustomTable<T extends Record<string, any>>({
                 width: "max-content",
               }}
             >
-              <TableHeader
-                onRequestSort={handleRequestSort}
-                order={sortState.order}
-                orderBy={sortState.orderBy}
-                columnWidths={columnWidths}
-                handleResizeStart={handleResizeStart}
-              />
-              <TableBody>
-                {processedData.map((row) => {
-                  return <TableRow key={row.id} row={row} />;
-                })}
-              </TableBody>
+              <TableHeader columnWidths={columnWidths} handleResizeStart={handleResizeStart} />
+              <TableBody />
             </Table>
           </StyledTableContainer>
           <TableFooter

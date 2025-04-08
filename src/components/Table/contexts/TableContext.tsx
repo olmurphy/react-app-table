@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, useReducer } from 'react';
 import { Column, SearchFilter } from '../Table.types';
+import { sortData } from '../utils/sortUtils';
 export interface TableState<T> {
   data: T[];
   columns: Column<T>[];
@@ -19,6 +20,7 @@ export interface TableState<T> {
     searchField: keyof T | null;
   };
   selected: T[];
+  processedData: T[];
 }
 
 export type TableAction<T> =
@@ -159,6 +161,7 @@ export function TableProvider<T>({
     page,
     pageSize,
     totalCount,
+    processedData: []
   });
   const processedData = useMemo(() => {
     if (state.isServerSide) {
@@ -186,33 +189,17 @@ export function TableProvider<T>({
     //   }
     // });
 
-    // Apply search
-    if (state.searchState.searchTerm && state.searchState.searchField) {
-      const searchTerm = state.searchState.searchTerm.toLowerCase();
-      filteredData = filteredData.filter((row: T) => {
-        const value = row[state.searchState.searchField as keyof T];
-        return String(value).toLowerCase().includes(searchTerm);
-      });
-    }
+    // // Apply search
+    // if (state.searchState.searchTerm && state.searchState.searchField) {
+    //   const searchTerm = state.searchState.searchTerm.toLowerCase();
+    //   filteredData = filteredData.filter((row: T) => {
+    //     const value = row[state.searchState.searchField as keyof T];
+    //     return String(value).toLowerCase().includes(searchTerm);
+    //   });
+    // }
 
-    // Apply sorting
-    if (state.sortState.orderBy) {
-      filteredData = [...filteredData].sort((a: T, b: T) => {
-        const aValue = a[state.sortState.orderBy as keyof T];
-        const bValue = b[state.sortState.orderBy as keyof T];
-
-        if (bValue < aValue) {
-          return state.sortState.order === 'desc' ? -1 : 1;
-        }
-        if (bValue > aValue) {
-          return state.sortState.order === 'desc' ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-
-    return filteredData;
-  }, [state.data, state.filters, state.searchState, state.sortState, state.isServerSide]);
+    return sortData(filteredData, state.sortState.orderBy, state.sortState.order).slice((page - 1) * pageSize, page * pageSize);
+  }, [state.data, state.filters, state.searchState, state.sortState, page, pageSize, state.isServerSide]);
 
   const value: TableContextValue<T> = useMemo(
     () => ({

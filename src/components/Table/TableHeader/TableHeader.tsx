@@ -4,10 +4,9 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
 import visuallyHidden from "@mui/utils/visuallyHidden";
-import { Order } from "../Table.types";
 import { SelectionCheckbox } from "../components";
 import { useTableContext } from "../contexts/TableContext";
-import { useTableSort } from "../hooks";
+import { useTableSort } from "../hooks/useTableSort";
 import { ResizeHandle } from "./ResizeHandle";
 
 type TableHeaderProps<T> = {
@@ -21,7 +20,7 @@ export function TableHeader<T>(props: Readonly<TableHeaderProps<T>>) {
   const { handleRequestSort, sortState } = useTableSort<T>();
   const { order, orderBy } = sortState;
 
-  const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: keyof T) => (_: React.MouseEvent<unknown>) => {
     handleRequestSort(property);
   };
 
