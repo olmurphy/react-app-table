@@ -1,61 +1,67 @@
 import React, { useContext, createContext, useState, useMemo } from "react";
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
 import styles from "./Sidebar.module.css"; // Import the CSS module
+import { SidebarProps } from './types';
+import { SidebarProvider } from './SidebarContext';
+import { SidebarItem } from './SidebarItem';
 
 const SidebarContext = createContext({ expanded: true });
 
-type SideBarProps = {
-  children: React.ReactNode;
-};
-
-export default function Sidebar({ children }: Readonly<SideBarProps>) {
-  const [expanded, setExpanded] = useState(true);
-
+export const Sidebar: React.FC<SidebarProps> = ({
+  items,
+  defaultExpanded = true,
+  onItemClick,
+  className,
+}) => {
   return (
-    <aside className={styles.sidebar}>
-      <nav className={`${styles.sidebarNav} ${styles.container}`}>
-        <div className={styles.sidebarHeader}>
-          <img
-            src="https://img.logoipsum.com/243.svg"
-            className={`${styles.sidebarLogo} ${
-              expanded ? styles.sidebarLogoExpanded : styles.sidebarLogoCollapsed
-            }`}
-            alt=""
-          />
-          <button
-            onClick={() => setExpanded((curr) => !curr)}
-            className={styles.sidebarToggleButton}
-          >
-            {expanded ? <ChevronFirst /> : <ChevronLast />}
-          </button>
-        </div>
-
-        <SidebarContext.Provider value={useMemo(() => ({ expanded }), [expanded])}>
-          <ul className={styles.sidebarContent}>{children}</ul>
-        </SidebarContext.Provider>
-
-        <div className={styles.sidebarFooter}>
-          <img
-            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
-            alt=""
-            className={styles.sidebarUserAvatar}
-          />
-          <div
-            className={`${styles.sidebarUserInfo} ${
-              expanded ? styles.sidebarUserInfoExpanded : styles.sidebarUserInfoCollapsed
-            }`}
-          >
-            <div className={styles.sidebarUserDetails}>
-              <h4 className={styles.sidebarUserName}>John Doe</h4>
-              <span className={styles.sidebarUserEmail}>[REDACTED_EMAIL_ADDRESS_1]</span>
-            </div>
-            <MoreVertical size={20} />
+    <SidebarProvider defaultExpanded={defaultExpanded}>
+      <aside className={`${styles.sidebar} ${className || ''}`}>
+        <nav className={styles.sidebarNav}>
+          <div className={styles.sidebarHeader}>
+            <img
+              src="https://img.logoipsum.com/243.svg"
+              className={styles.sidebarLogo}
+              alt="Logo"
+            />
+            <button
+              onClick={() => {
+                const { toggleExpanded } = useSidebar();
+                toggleExpanded();
+              }}
+              className={styles.sidebarToggleButton}
+            >
+              {defaultExpanded ? <ChevronFirst /> : <ChevronLast />}
+            </button>
           </div>
-        </div>
-      </nav>
-    </aside>
+
+          <div className={styles.sidebarContent}>
+            {items.map((item) => (
+              <SidebarItem
+                key={item.id}
+                item={item}
+                onClick={() => onItemClick?.(item)}
+              />
+            ))}
+          </div>
+
+          <div className={styles.sidebarFooter}>
+            <img
+              src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
+              alt="User avatar"
+              className={styles.sidebarUserAvatar}
+            />
+            <div className={styles.sidebarUserInfo}>
+              <div className={styles.sidebarUserDetails}>
+                <h4 className={styles.sidebarUserName}>John Doe</h4>
+                <span className={styles.sidebarUserEmail}>john@example.com</span>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </aside>
+    </SidebarProvider>
   );
-}
+};
 
 type SideBarItemProps = {
   icon: any;
