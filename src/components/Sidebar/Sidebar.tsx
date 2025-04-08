@@ -1,11 +1,9 @@
-import React, { useContext, createContext, useState, useMemo } from "react";
-import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
-import styles from "./Sidebar.module.css"; // Import the CSS module
+import React from 'react';
+import { ChevronFirst, ChevronLast } from 'lucide-react';
 import { SidebarProps } from './types';
 import { SidebarProvider } from './SidebarContext';
 import { SidebarItem } from './SidebarItem';
-
-const SidebarContext = createContext({ expanded: true });
+import styles from './Sidebar.module.css';
 
 export const Sidebar: React.FC<SidebarProps> = ({
   items,
@@ -62,40 +60,3 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </SidebarProvider>
   );
 };
-
-type SideBarItemProps = {
-  icon: any;
-  text: string;
-  active?: boolean;
-  alert?: boolean;
-};
-
-export function SidebarItem({ icon, text, active, alert }: Readonly<SideBarItemProps>) {
-  const { expanded } = useContext(SidebarContext);
-
-  return (
-    <li
-      className={`${styles.sidebarItem} ${
-        active ? styles.sidebarItemActive : styles.sidebarItemInactive
-      }`}
-    >
-      {icon}
-      <span
-        className={`${styles.sidebarItemText} ${
-          expanded ? styles.sidebarItemTextExpanded : styles.sidebarItemTextCollapsed
-        }`}
-      >
-        {text}
-      </span>
-      {alert && (
-        <div
-          className={`${styles.sidebarItemAlert} ${
-            expanded ? "" : styles.sidebarItemAlertOffset
-          }`}
-        />
-      )}
-
-      {!expanded && <div className={styles.sidebarItemTooltip}>{text}</div>}
-    </li>
-  );
-}
