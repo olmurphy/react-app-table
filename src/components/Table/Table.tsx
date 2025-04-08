@@ -12,40 +12,7 @@ import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
 import { TableRow } from "./TableRow/TableRow";
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (a: { [key in Key]: number | string }, b: { [key in Key]: number | string }) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function debounce<T extends (...args: any[]) => any>(func: T, wait: number): T & { cancel: () => void } {
-  let timeout: NodeJS.Timeout;
-
-  const debounced = (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-
-  debounced.cancel = () => {
-    clearTimeout(timeout);
-  };
-
-  return debounced as T & { cancel: () => void };
-}
+import { useTableSort } from "./hooks";
 
 export function CustomTable<T extends Record<string, any>>({
   tableName,
@@ -85,15 +52,18 @@ export function CustomTable<T extends Record<string, any>>({
     // console.log(`Action selected: ${action}`);
   };
 
+  // Use the custom hook for sorting
+  const { handleRequestSort, getSortedData, createDebouncedSortHandler } = useTableSort<T>();
+
   // Debounced sort handler for better performance
   const debouncedSortChange = useMemo(
     () =>
-      debounce((property: keyof T, order: Order) => {
+      createDebouncedSortHandler((property: keyof T, order: Order) => {
         if (onSortChange) {
           onSortChange(property, order);
         }
-      }, 300),
-    [onSortChange]
+      }),
+    [onSortChange, createDebouncedSortHandler]
   );
 
   // Memoized filtered and sorted data
@@ -124,10 +94,8 @@ export function CustomTable<T extends Record<string, any>>({
     });
 
     // Apply sorting & pagination
-    return [...filteredData]
-      .sort(getComparator(sortState.order, sortState.orderBy))
-      .slice((page - 1) * pageSize, page * pageSize);
-  }, [data, filters, sortState.order, sortState.orderBy, isServerSide, page, pageSize]);
+    return getSortedData(filteredData).slice((page - 1) * pageSize, page * pageSize);
+  }, [data, filters, sortState.order, sortState.orderBy, isServerSide, page, pageSize, getSortedData]);
 
   // Handle edit
   const handleEditLocal = useCallback(
@@ -155,15 +123,6 @@ export function CustomTable<T extends Record<string, any>>({
       debouncedSortChange.cancel();
     };
   }, [debouncedSortChange]);
-
-  const handleRequestSort = (_: React.MouseEvent<unknown>, property: keyof T) => {
-    console.log("inside of handleRequestSort");
-    const isAsc = sortState.orderBy === property && sortState.order === "asc";
-    setSortState({
-      orderBy: property,
-      order: isAsc ? "desc" : "asc",
-    });
-  };
 
   const handleChangePage = (_: unknown, newPage: number) => {
     if (onPageChange) {

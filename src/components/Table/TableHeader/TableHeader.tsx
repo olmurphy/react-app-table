@@ -7,30 +7,22 @@ import visuallyHidden from "@mui/utils/visuallyHidden";
 import { Order } from "../Table.types";
 import { SelectionCheckbox } from "../components";
 import { useTableContext } from "../contexts/TableContext";
+import { useTableSort } from "../hooks";
 import { ResizeHandle } from "./ResizeHandle";
 
-type TableHeader<T> = {
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
-  order: Order;
-  orderBy: keyof T;
+type TableHeaderProps<T> = {
   columnWidths: Record<keyof T, number | string>;
   handleResizeStart: (event: React.MouseEvent, columnId: keyof T) => void;
 };
 
-export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
-  const { state, dispatch } = useTableContext<T>();
-  const { order, orderBy, onRequestSort, columnWidths, handleResizeStart } = props;
+export function TableHeader<T>(props: Readonly<TableHeaderProps<T>>) {
+  const { state } = useTableContext<T>();
+  const { columnWidths, handleResizeStart } = props;
+  const { handleRequestSort, sortState } = useTableSort<T>();
+  const { order, orderBy } = sortState;
 
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
-    const isAsc = state.sortState.orderBy === property && state.sortState.order === "asc";
-    dispatch({
-      type: "SET_SORT",
-      payload: {
-        orderBy: property,
-        order: isAsc ? "desc" : "asc",
-      },
-    });
-    onRequestSort(event, property);
+    handleRequestSort(property);
   };
 
   return (
