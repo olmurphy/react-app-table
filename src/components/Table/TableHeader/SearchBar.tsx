@@ -53,18 +53,16 @@ export function SearchBar<T>() {
     if (event.key === "Enter") {
       const value = searchTerm.split(" = ")[1]?.trim();
       if (value && currentFilterColumn) {
+        // Add the filter to active filters
         dispatch({
           type: "SET_ACTIVE_FILTER",
           payload: { column: currentFilterColumn, value },
         });
-        dispatch({
-          type: "SET_SEARCH",
-          payload: {
-            field: currentFilterColumn,
-            term: value,
-          },
-        });
+        
+        // Update the filters state
         handleFilterChangeLocal(currentFilterColumn, value);
+        
+        // Clear the search input
         setSearchTerm("");
         setCurrentFilterColumn(null);
       }

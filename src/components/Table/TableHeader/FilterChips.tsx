@@ -9,12 +9,21 @@ export function FilterChips<T>() {
     dispatch({
       type: "CLEAR_ALL_ACTIVE_FILTERS",
     });
+    
+    dispatch({
+      type: "CLEAR_ALL_FILTERS",
+    });
   }
 
   function handleRemoveFilter(column: keyof T) {
     dispatch({
       type: "CLEAR_ACTIVE_FILTER",
       payload: { column },
+    });
+    
+    dispatch({
+      type: "SET_FILTERS",
+      payload: { field: column, value: "" },
     });
   }
 

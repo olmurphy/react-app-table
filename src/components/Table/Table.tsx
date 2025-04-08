@@ -11,6 +11,7 @@ import { FilterChips } from "./TableHeader/FilterChips";
 import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
+import { TableFilterNotifier } from "./TableFilterNotifier";
 
 export function CustomTable<T extends Record<string, any>>({
   tableName,
@@ -83,6 +84,7 @@ export function CustomTable<T extends Record<string, any>>({
       pageSize={pageSize}
       totalCount={totalCount}
     >
+      <TableFilterNotifier onFilterChange={onFilterChange} />
       <Box>
         <TableToolbar tableName={tableName} onActionSelect={handleActionSelect} />
         <Box

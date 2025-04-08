@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useMemo, useReducer } from 'react';
 import { Column, SearchFilter } from '../Table.types';
 import { sortData } from '../utils/sortUtils';
+import { applyFilters, applySearch } from '../utils/filterUtils';
+
 export interface TableState<T> {
   data: T[];
   columns: Column<T>[];
@@ -92,6 +94,12 @@ function tableReducer<T>(state: TableState<T>, action: TableAction<T>): TableSta
         filters: { ...state.filters, [action.payload.field]: action.payload.value },
       };
     
+    case 'CLEAR_ALL_FILTERS':
+      return {
+        ...state,
+        filters: {},
+      };
+    
     case 'SET_ACTIVE_FILTER':
       return {
         ...state,
@@ -170,36 +178,18 @@ export function TableProvider<T>({
 
     let filteredData = state.data;
 
-    // // Apply filters
-    // Object.entries(state.filters).forEach(([key, value]) => {
-    //   if (value !== undefined && value !== null && value !== '') {
-    //     filteredData = filteredData.filter((row: T) => {
-    //       const rowValue = row[key as keyof T];
+    // Apply active filters
+    filteredData = applyFilters(filteredData, state.activeFilters);
 
-    //       if (Array.isArray(value)) {
-    //         return value.includes(rowValue as string);
-    //       }
-
-    //       if (typeof rowValue === 'string' && typeof value === 'string') {
-    //         return rowValue.toLowerCase().includes(value.toLowerCase());
-    //       }
-
-    //       return rowValue === value;
-    //     });
-    //   }
-    // });
-
-    // // Apply search
-    // if (state.searchState.searchTerm && state.searchState.searchField) {
-    //   const searchTerm = state.searchState.searchTerm.toLowerCase();
-    //   filteredData = filteredData.filter((row: T) => {
-    //     const value = row[state.searchState.searchField as keyof T];
-    //     return String(value).toLowerCase().includes(searchTerm);
-    //   });
-    // }
+    // Apply search if needed
+    filteredData = applySearch(
+      filteredData, 
+      state.searchState.searchTerm, 
+      state.searchState.searchField
+    );
 
     return sortData(filteredData, state.sortState.orderBy, state.sortState.order).slice((page - 1) * pageSize, page * pageSize);
-  }, [state.data, state.filters, state.searchState, state.sortState, page, pageSize, state.isServerSide]);
+  }, [state.data, state.activeFilters, state.searchState, state.sortState, page, pageSize, state.isServerSide]);
 
   const value: TableContextValue<T> = useMemo(
     () => ({
