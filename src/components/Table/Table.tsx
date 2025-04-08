@@ -210,7 +210,6 @@ export function CustomTable<T extends Record<string, any>>({
             >
               <TableHeader
                 onRequestSort={handleRequestSort}
-                onSelectAllClick={() => {}}
                 order={sortState.order}
                 orderBy={sortState.orderBy}
                 columnWidths={columnWidths}

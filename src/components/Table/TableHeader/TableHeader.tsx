@@ -3,16 +3,14 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import { ResizeHandle } from "./ResizeHandle";
 import visuallyHidden from "@mui/utils/visuallyHidden";
-import { Column, Order } from "../Table.types";
-import { useTableContext } from "../contexts/TableContext";
+import { Order } from "../Table.types";
 import { SelectionCheckbox } from "../components";
-import { useEffect } from "react";
+import { useTableContext } from "../contexts/TableContext";
+import { ResizeHandle } from "./ResizeHandle";
 
 type TableHeader<T> = {
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: keyof T;
   columnWidths: Record<keyof T, number | string>;
@@ -34,11 +32,6 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
     });
     onRequestSort(event, property);
   };
-
-
-  useEffect(() => {
-    console.log(columnWidths);
-  }, [columnWidths])
 
   return (
     <TableHead>
@@ -90,9 +83,12 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
             </Box>
           </TableCell>
         ))}
-        <TableCell sx={{
-          width: "300px",
-        }} id={"Presentation"}></TableCell>
+        <TableCell
+          sx={{
+            width: "300px",
+          }}
+          id={"Presentation"}
+        ></TableCell>
       </TableRow>
     </TableHead>
   );
