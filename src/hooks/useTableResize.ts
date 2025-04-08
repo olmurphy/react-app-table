@@ -1,9 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 
-/**
- * Custom hook for handling table column resizing
- * @returns Object containing column widths and resize handlers
- */
 export function useTableResize<T>() {
   const [columnWidths, setColumnWidths] = useState<Record<keyof T, number>>({});
   const resizingColumn = useRef<keyof T | null>(null);
@@ -17,9 +13,9 @@ export function useTableResize<T>() {
       startX.current = event.clientX;
       startWidth.current = columnWidths[columnId] || 100;
 
-      document.body.style.cursor = 'col-resize';
-      document.addEventListener('mousemove', handleResize);
-      document.addEventListener('mouseup', handleResizeEnd);
+      document.body.style.cursor = "col-resize";
+      document.addEventListener("mousemove", handleResize);
+      document.addEventListener("mouseup", handleResizeEnd);
     },
     [columnWidths]
   );
@@ -28,7 +24,7 @@ export function useTableResize<T>() {
     if (!resizingColumn.current) return;
 
     const diff = event.clientX - startX.current;
-    const newWidth = Math.max(100, startWidth.current + diff); // Minimum width of 100px
+    const newWidth = Math.max(100, startWidth.current + diff);
 
     setColumnWidths((prev) => ({
       ...prev,
@@ -38,16 +34,15 @@ export function useTableResize<T>() {
 
   const handleResizeEnd = useCallback(() => {
     resizingColumn.current = null;
-    document.body.style.cursor = '';
-    document.removeEventListener('mousemove', handleResize);
-    document.removeEventListener('mouseup', handleResizeEnd);
+    document.body.style.cursor = "";
+    document.removeEventListener("mousemove", handleResize);
+    document.removeEventListener("mouseup", handleResizeEnd);
   }, [handleResize]);
 
-  // Clean up event listeners on unmount
   useEffect(() => {
     return () => {
-      document.removeEventListener('mousemove', handleResize);
-      document.removeEventListener('mouseup', handleResizeEnd);
+      document.removeEventListener("mousemove", handleResize);
+      document.removeEventListener("mouseup", handleResizeEnd);
     };
   }, [handleResize, handleResizeEnd]);
 

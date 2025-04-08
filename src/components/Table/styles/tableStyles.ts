@@ -3,7 +3,6 @@ import TableContainer from "@mui/material/TableContainer";
 
 export const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
   boxShadow:
     theme.palette.mode === "light"
       ? "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)"
@@ -79,6 +78,18 @@ export const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
       },
     },
   },
+
+  // Fixed footer
+  "& .MuiTableFooter-root": {
+    position: "sticky",
+    bottom: 0,
+    backgroundColor: theme.palette.background.paper,
+    zIndex: 1,
+  },
+}));
+
+
+export const StyleFooter = styled(TableContainer)(({ theme }) => ({
 
   // Fixed footer
   "& .MuiTableFooter-root": {

@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTableResize } from "../../hooks/useTableResize";
 import { TableProvider } from "./contexts/TableContext";
 import { StyledTableContainer } from "./styles/tableStyles";
 import { Order, SortState, TableProps } from "./Table.types";
@@ -11,7 +12,6 @@ import { TableToolbar } from "./TableHeader/HeaderToolbar";
 import { SearchBar } from "./TableHeader/SearchBar";
 import { TableHeader } from "./TableHeader/TableHeader";
 import { TableRow } from "./TableRow/TableRow";
-import { useTableResize } from "../../hooks/useTableResize";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -76,14 +76,9 @@ export function CustomTable<T extends Record<string, any>>({
     order: initialSort?.order || "asc",
   }));
   const [filters, setFilters] = useState<Partial<Record<keyof T, string | number | boolean | string[]>>>({});
-  
-  // Use the custom hook for column resizing
-  const { columnWidths, handleResizeStart, initializeColumnWidths } = useTableResize<T>();
 
-  // Initialize column widths when columns change
-  useEffect(() => {
-    initializeColumnWidths(columns);
-  }, [columns, initializeColumnWidths]);
+  // Use the custom hook for column resizing
+  const { columnWidths, handleResizeStart } = useTableResize<T>();
 
   const handleActionSelect = (action: string) => {
     // Implement action logic here
@@ -207,15 +202,17 @@ export function CustomTable<T extends Record<string, any>>({
         </Box>
         <Box>
           <StyledTableContainer>
-            <Table>
+            <Table
+              sx={{
+                overflowX: "auto",
+                width: "max-content",
+              }}
+            >
               <TableHeader
-                numSelected={0}
                 onRequestSort={handleRequestSort}
                 onSelectAllClick={() => {}}
                 order={sortState.order}
                 orderBy={sortState.orderBy}
-                rowCount={data.length}
-                columns={columns}
                 columnWidths={columnWidths}
                 handleResizeStart={handleResizeStart}
               />
@@ -224,14 +221,14 @@ export function CustomTable<T extends Record<string, any>>({
                   return <TableRow key={row.id} row={row} />;
                 })}
               </TableBody>
-              <TableFooter
-                page={page - 1}
-                pageSize={pageSize}
-                handleChangePage={handleChangePage}
-                handleChangeRowsPerPage={handleChangeRowsPerPage}
-              />
             </Table>
           </StyledTableContainer>
+          <TableFooter
+            page={page - 1}
+            pageSize={pageSize}
+            handleChangePage={handleChangePage}
+            handleChangeRowsPerPage={handleChangeRowsPerPage}
+          />
         </Box>
       </Box>
     </TableProvider>

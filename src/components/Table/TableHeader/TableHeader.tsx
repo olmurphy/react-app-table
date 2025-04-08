@@ -8,22 +8,20 @@ import visuallyHidden from "@mui/utils/visuallyHidden";
 import { Column, Order } from "../Table.types";
 import { useTableContext } from "../contexts/TableContext";
 import { SelectionCheckbox } from "../components";
+import { useEffect } from "react";
 
 type TableHeader<T> = {
-  numSelected: number;
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof T) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: keyof T;
-  rowCount: number;
-  columns: Column<T>[];
   columnWidths: Record<keyof T, number | string>;
   handleResizeStart: (event: React.MouseEvent, columnId: keyof T) => void;
 };
 
 export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
   const { state, dispatch } = useTableContext<T>();
-  const { order, orderBy, numSelected, rowCount, onRequestSort, columns, columnWidths, handleResizeStart } = props;
+  const { order, orderBy, onRequestSort, columnWidths, handleResizeStart } = props;
 
   const createSortHandler = (property: keyof T) => (event: React.MouseEvent<unknown>) => {
     const isAsc = state.sortState.orderBy === property && state.sortState.order === "asc";
@@ -37,13 +35,18 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
     onRequestSort(event, property);
   };
 
+
+  useEffect(() => {
+    console.log(columnWidths);
+  }, [columnWidths])
+
   return (
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
           <SelectionCheckbox isHeader={true} />
         </TableCell>
-        {columns.map((column) => (
+        {state.columns.map((column) => (
           <TableCell
             key={column.id as number}
             align={column.align || "left"}
@@ -51,7 +54,7 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
             sx={{
               position: "relative",
               width: columnWidths[column.id] || "auto",
-              minWidth: "100px", // Prevent columns from becoming too narrow
+              maxWidth: "1000px", // Prevent columns from becoming too narrow
               fontSize: "0.875rem",
               padding: "4px 24px 4px 8px",
             }}
@@ -87,6 +90,9 @@ export function TableHeader<T>(props: Readonly<TableHeader<T>>) {
             </Box>
           </TableCell>
         ))}
+        <TableCell sx={{
+          width: "300px",
+        }} id={"Presentation"}></TableCell>
       </TableRow>
     </TableHead>
   );

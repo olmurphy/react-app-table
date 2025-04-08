@@ -9,7 +9,7 @@ type TableRowProps<T> = {
 }
 
 export function TableRow<T>(props: Readonly<TableRowProps<T>>) {
-  const { state, dispatch } = useTableContext<T>();
+  const { state } = useTableContext<T>();
   const { isRowSelected, handleSelectOneClick } = useTableSelection<T>();
   
   return (
@@ -28,6 +28,7 @@ export function TableRow<T>(props: Readonly<TableRowProps<T>>) {
       {state.columns.map((column) => {
         return <TableCell key={column.id as number}>{props.row[column.id as keyof T]}</TableCell>;
       })}
+          <TableCell sx={{width: "300px"}} id={"Presentation"}></TableCell>
     </TableRowMUI>
   );
 }
