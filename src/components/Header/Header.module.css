@@ -37,6 +37,7 @@
 
 .nav-link {
   margin: 10rem;
+  color: var(--text) !important;
 }
 
 .underline {

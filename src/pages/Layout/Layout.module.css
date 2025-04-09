@@ -1,0 +1,23 @@
+.container {
+  background-color: var(--bg-light);
+  color: var(--text);
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  /* overflow: hidden; */
+}
+
+.sidebarContainer {
+  display: flex;
+  height: 100vh;
+  flex: 0 0 auto;
+}
+
+.contentContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 5rem;
+  /* max-width: 100%; */
+}

@@ -1,59 +1,41 @@
-import React from 'react';
-import { ChevronFirst, ChevronLast } from 'lucide-react';
-import { SidebarProps } from './types';
-import { SidebarProvider } from './SidebarContext';
-import { SidebarItem } from './SidebarItem';
-import styles from './Sidebar.module.css';
+import { ChevronFirst, ChevronLast } from "lucide-react";
+import React from "react";
+import { Button } from "./components/Button/Button";
+import { SidebarItem } from "./components/SidebarItem/SidebarItem";
+import { SidebarProvider } from "./contexts/SidebarContexts";
+import styles from "./Sidebar.module.css"; // Import the CSS module
+import { SidebarProps } from "./types/SidebarTypes";
 
-export const Sidebar: React.FC<SidebarProps> = ({
-  items,
-  defaultExpanded = true,
-  onItemClick,
-  className,
-}) => {
+export const Sidebar: React.FC<SidebarProps> = ({ items, defaultExpanded = true, onItemClick, className }) => {
   return (
     <SidebarProvider defaultExpanded={defaultExpanded}>
-      <aside className={`${styles.sidebar} ${className || ''}`}>
-        <nav className={styles.sidebarNav}>
+      <aside className={`${styles.sidebar} ${className || ""}`}>
+        <nav className={`${styles.sidebarNav} ${styles.container}`}>
           <div className={styles.sidebarHeader}>
-            <img
-              src="https://img.logoipsum.com/243.svg"
-              className={styles.sidebarLogo}
-              alt="Logo"
-            />
-            <button
-              onClick={() => {
-                const { toggleExpanded } = useSidebar();
-                toggleExpanded();
-              }}
-              className={styles.sidebarToggleButton}
-            >
-              {defaultExpanded ? <ChevronFirst /> : <ChevronLast />}
-            </button>
+            <Button>{defaultExpanded ? <ChevronFirst /> : <ChevronLast />}</Button>
           </div>
-
           <div className={styles.sidebarContent}>
             {items.map((item) => (
-              <SidebarItem
-                key={item.id}
-                item={item}
-                onClick={() => onItemClick?.(item)}
-              />
+              <SidebarItem key={item.id} item={item} onClick={() => onItemClick?.(item)} />
             ))}
           </div>
 
           <div className={styles.sidebarFooter}>
-            <img
+            {/* <img
               src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
-              alt="User avatar"
+              alt=""
               className={styles.sidebarUserAvatar}
-            />
-            <div className={styles.sidebarUserInfo}>
+            /> */}
+            {/* <div
+              className={`${styles.sidebarUserInfo} ${
+                expanded ? styles.sidebarUserInfoExpanded : styles.sidebarUserInfoCollapsed
+              }`}
+            >
               <div className={styles.sidebarUserDetails}>
                 <h4 className={styles.sidebarUserName}>John Doe</h4>
-                <span className={styles.sidebarUserEmail}>john@example.com</span>
+                <span className={styles.sidebarUserEmail}>[john@example.com]</span>
               </div>
-            </div>
+            </div> */}
           </div>
         </nav>
       </aside>

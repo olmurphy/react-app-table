@@ -80,7 +80,11 @@ export function CustomTable<T extends Record<string, any>>({
       pageSize={pageSize}
       totalCount={totalCount}
     >
-      <Box>
+      <Box
+        sx={{
+          width: "100%"
+        }}
+      >
         <TableToolbar tableName={tableName} onActionSelect={handleActionSelect} />
         <Box
           sx={{

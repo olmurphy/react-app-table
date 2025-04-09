@@ -3,7 +3,8 @@ import { LucideIcon } from 'lucide-react';
 export interface SidebarItemData {
   id: string;
   label: string;
-  icon?: LucideIcon;
+  link: string;
+  icon?: any;
   path?: string;
   children?: SidebarItemData[];
   isExpanded?: boolean;
@@ -20,10 +21,7 @@ export interface SidebarContextType {
   toggleItemExpanded: (id: string) => void;
 }
 
-export interface SidebarItemProps {
-  item: SidebarItemData;
-  level?: number;
-}
+
 
 export interface SidebarGroupProps {
   items: SidebarItemData[];

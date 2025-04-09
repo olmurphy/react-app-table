@@ -12,6 +12,7 @@ import { UserProvider } from "../contexts/userContext";
 import { logger } from "../utils/logger";
 import Footer from "./Footer/Footer";
 import { Header } from "./Header/Header";
+import { AuthBlueSso } from "@src/components/AuthBlue/AuthBlueSSO";
 
 function useComponentRenderTime(componentName: string) {
   const comoponentRef = useRef(null);
@@ -92,7 +93,8 @@ if (!global.BROWSER) {
   EadpaUi.appConfig = require("../appConfig").default;
 }
 
-if (global.BROWSER) { // this is run in browser
+if (global.BROWSER) {
+  // this is run in browser
   const { initWebVitals } = require("../utils/performance");
   initWebVitals();
 }

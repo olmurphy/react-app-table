@@ -1,0 +1,3 @@
+.breadcrumb a, .breadcrumb {
+  color: var(--link) !important;
+}

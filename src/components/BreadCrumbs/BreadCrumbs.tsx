@@ -15,7 +15,7 @@ export function BreadCrumbs() {
     const label = segment.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 
     return (
-      <Breadcrumb key={href} href={href}>
+      <Breadcrumb className={styles.breadcrumb} key={href} href={href}>
         {label}
       </Breadcrumb>
     );
@@ -24,11 +24,13 @@ export function BreadCrumbs() {
     <div className={`${styles.container}`}>
       <BreadcrumbTrail>
         <Breadcrumb>
-          <img
-            style={{ width: "15px", height: "15px" }}
-            alt="home icon"
-            src={state.currentTheme === "dark" ? homeIcon : homeDarkIcon}
-          />
+          <a href="/">
+            <img
+              style={{ width: "15px", height: "15px" }}
+              alt="home icon"
+              src={state.currentTheme === "dark" ? homeIcon : homeDarkIcon}
+            />
+          </a>
         </Breadcrumb>
         {breadcrumbs}
       </BreadcrumbTrail>
