@@ -5,19 +5,22 @@
   flex-direction: row;
   height: 100vh;
   width: 100vw;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 .sidebarContainer {
   display: flex;
   height: 100vh;
   flex: 0 0 auto;
+  transition: width 0.2s ease-in-out;
 }
 
 .contentContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 5rem;
-  /* max-width: 100%; */
+  padding: 1.5rem;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 100%;
 }
