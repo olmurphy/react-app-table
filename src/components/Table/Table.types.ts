@@ -39,7 +39,6 @@ export interface TableProps<T> {
   onExport?: (data?: T[]) => void; // make data optional to match both interfaces.
   onExpand?: (row: T) => void;
   expandedRows?: T[]; // Add expandedRows from second interface
-  totalCount?: number;
   page?: number;
   pageSize?: number;
   onPageChange?: (page: number) => void; // use page instead of event for simplicity

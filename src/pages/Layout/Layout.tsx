@@ -1,9 +1,8 @@
-import React from 'react';
-import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs";
-import { Sidebar } from "../components/Sidebar/Sidebar";
-import { sideBarItems } from "../pages/AdminScreen/AdminScreenConfig";
-import { useSidebar } from "../components/Sidebar/contexts/SidebarContexts";
-import styles from "./Layout.module.css";
+import { BreadCrumbs } from "@src/components/BreadCrumbs/BreadCrumbs";
+import { SidebarProvider } from "@src/components/Sidebar/contexts/SidebarContexts";
+import { Sidebar } from "@src/components/Sidebar/Sidebar";
+import { sideBarItems } from "@src/pages/AdminScreen/AdminScreenConfig";
+import styles from "@src/pages/Layout/Layout.module.css";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -11,19 +10,21 @@ type LayoutProps = {
 
 export function Layout({ children }: Readonly<LayoutProps>) {
   return (
-    <div className={styles.container}>
-      <div className={styles.sidebarContainer}>
-        <Sidebar
-          items={sideBarItems}
-          onItemClick={(item) => {
-            if (item.path) {
-              // window.location.href = item.path;
-            }
-          }}
-        />
+    <div className={`${styles.container}`}>
+      <div className={`${styles.sidebarContainer}`}>
+        <SidebarProvider defaultExpanded={true}>
+          <Sidebar
+            items={sideBarItems}
+            onItemClick={(item) => {
+              if (item.path) {
+                // window.location.href = item.path;
+              }
+            }}
+          />
+        </SidebarProvider>
       </div>
-      
-      <div className={styles.contentContainer}>
+
+      <div className={`${styles.contentContainer}`}>
         <BreadCrumbs />
         {children}
       </div>

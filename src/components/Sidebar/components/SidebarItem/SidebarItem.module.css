@@ -2,16 +2,6 @@
   width: 100%;
 }
 
-.sidebarItem {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  border-radius: 0.375rem;
-  transition: background-color 0.2s ease-in-out;
-  position: relative;
-}
-
 .sidebarItem:hover {
   background-color: var(--hover-bg);
 }
@@ -35,7 +25,6 @@
   width: 1.5rem;
   height: 1.5rem;
   color: var(--icon-color);
-  flex-shrink: 0;
 }
 
 .sidebarItemLabel {
@@ -88,24 +77,46 @@
 
 .sidebarItemTooltip {
   position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: var(--bg-dark);
-  color: var(--text-light);
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease-in-out;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  left: 100%; /* tailwind: left-full */
+  border-radius: 0.375rem; /* tailwind: rounded-md */
+  padding-left: 0.5rem; /* tailwind: px-2 */
+  padding-right: 0.5rem;
+  padding-top: 0.25rem; /* tailwind: py-1 */
+  padding-bottom: 0.25rem;
+  margin-left: 1.5rem; /* tailwind: ml-6 */
+  background-color: #ede9fe; /* tailwind: bg-indigo-100 */
+  color: #4f46e5; /* tailwind: text-indigo-800 */
+  font-size: 0.875rem; /* tailwind: text-sm */
+  visibility: hidden; /* tailwind: invisible */
+  opacity: 0.2; /* tailwind: opacity-20 */
+  transform: translateX(-0.75rem); /* tailwind: -translate-x-3 */
+  transition-property: all;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebarItem:hover .sidebarItemTooltip {
-  opacity: 1;
+  visibility: visible; /* tailwind: group-hover:visible */
+  opacity: 1; /* tailwind: group-hover:opacity-100 */
+  transform: translateX(0); /* tailwind: group-hover:translate-x-0 */
+}
+
+.sidebarItem {
+  position: relative;
+  display: flex;
+  align-items: center; /* tailwind: items-center */
+  padding-top: 0.5rem; /* tailwind: py-2 */
+  padding-bottom: 0.5rem;
+  padding-left: 0.75rem; /* tailwind: px-3 */
+  padding-right: 0.75rem;
+  margin-top: 0.25rem; /* tailwind: my-1 */
+  margin-bottom: 0.25rem;
+  font-weight: 500; /* tailwind: font-medium */
+  border-radius: 0.375rem; /* tailwind: rounded-md */
+  cursor: pointer;
+  transition-property: color, background-color, border-color, text-decoration-line, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebarItemInactive {

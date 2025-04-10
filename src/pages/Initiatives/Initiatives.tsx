@@ -1,27 +1,15 @@
+import { BreadCrumbs } from "@src/components/BreadCrumbs/BreadCrumbs";
 import { CustomTable } from "@src/components/Table/Table";
-import { Column } from "@src/components/Table/Table.types";
-import { useTheme } from "@src/contexts/themeContext";
-import { data } from "@src/pages/CompanyDomain/data";
+import styles from "@src/pages/Initiatives/Initiatives.module.css";
+import { DataRow } from "../CompanyDomain/CompanyDomain";
 import { useState } from "react";
-
-export type DataRow = {
-  id: number;
-  firstName: string;
-  lastName: string;
-  birthday: string;
-};
-
-const columns: Column<DataRow>[] = [
-  { id: "id", label: "ID" },
-  { id: "firstName", label: "First Name" },
-  { id: "lastName", label: "Last Name" },
-  { id: "birthday", label: "Birthday" },
-];
+import { useTheme } from "@src/contexts/themeContext";
+import { data } from "../CompanyDomain/data";
+import { columns } from "../AdminScreen/AdminScreen";
 
 export function InitiativesPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalCount, setTotalCount] = useState(data.length);
   const { state } = useTheme();
 
   const handlePageChange = (newPage: number) => {
@@ -33,22 +21,22 @@ export function InitiativesPage() {
     setPage(1); // Reset to first page when page size changes
   };
   return (
-    <div
-      style={{
-        overflowX: "auto",
-        width: "100%",
-      }}
-    >
-      <CustomTable<DataRow>
-        tableName={"Company Domain"}
-        data={data}
-        columns={columns}
-        page={page}
-        pageSize={pageSize}
-        totalCount={totalCount}
-        onPageChange={handlePageChange}
-        onPageSizeChange={handleRowsPerChange}
-      />
+    <div className={styles.container}>
+      <div
+        style={{
+          overflowX: "auto",
+        }}
+      >
+        <CustomTable<DataRow>
+          tableName={"Initiatives"}
+          data={data}
+          columns={columns}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleRowsPerChange}
+        />
+      </div>
     </div>
   );
 }

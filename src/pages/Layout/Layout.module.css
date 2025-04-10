@@ -1,26 +1,16 @@
 .container {
+  display: flex;
   background-color: var(--bg-light);
   color: var(--text);
-  display: flex;
-  flex-direction: row;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  width: 100%;
 }
 
 .sidebarContainer {
   display: flex;
-  height: 100vh;
-  flex: 0 0 auto;
-  transition: width 0.2s ease-in-out;
+  height: 100%;
+  width: 10%;
 }
 
 .contentContainer {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem;
-  overflow-y: auto;
-  width: 100%;
-  max-width: 100%;
+  width: 90%;
 }

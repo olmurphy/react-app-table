@@ -2,6 +2,7 @@ import { ProgressCircular } from "@americanexpress/dls-react";
 import { loadLanguagePack } from "@americanexpress/one-app-ducks";
 import oneAppModuleWrapper from "@americanexpress/one-app-module-wrapper";
 import styles from "@src/assets/styles/global.css";
+import { QueryClient, QueryClientProvider } from "react-query";
 import PropTypes from "prop-types";
 import { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
@@ -12,7 +13,21 @@ import { UserProvider } from "../contexts/userContext";
 import { logger } from "../utils/logger";
 import Footer from "./Footer/Footer";
 import { Header } from "./Header/Header";
-import { AuthBlueSso } from "@src/components/AuthBlue/AuthBlueSSO";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: 2,
+      staleTime: 1000 * 60 * 5, // 5 mintes
+      cacheTime: 1000 * 60 * 10, // 10 minutes aka garbage collection in v4+
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 function useComponentRenderTime(componentName: string) {
   const comoponentRef = useRef(null);
@@ -50,22 +65,24 @@ const EadpaUi = ({ children, languageData, locale }) => {
         {/* <AuthBlueSso> */}
         <UserProvider>
           <ThemeProvider>
-            <Helmet
-              htmlAttributes={{ lang: locale, "data-dls-mode": "light" }}
-              link={[
-                {
-                  rel: "stylesheet",
-                  href: "https://www.aexp-static.com/cdaas/dls/packages/@americanexpress/dls/7.0.0/stylesheets/dls-core.min.css",
-                },
-                {
-                  rel: "icon",
-                  href: "/static/favicon.ico",
-                },
-              ]}
-            />
-            <Header />
-            {children}
-            <Footer />
+            <QueryClientProvider client={queryClient}>
+              <Helmet
+                htmlAttributes={{ lang: locale, "data-dls-mode": "light" }}
+                link={[
+                  {
+                    rel: "stylesheet",
+                    href: "https://www.aexp-static.com/cdaas/dls/packages/@americanexpress/dls/7.0.0/stylesheets/dls-core.min.css",
+                  },
+                  {
+                    rel: "icon",
+                    href: "/static/favicon.ico",
+                  },
+                ]}
+              />
+              <Header />
+              {children}
+              <Footer />
+            </QueryClientProvider>
           </ThemeProvider>
         </UserProvider>
         {/* </AuthBlueSso> */}

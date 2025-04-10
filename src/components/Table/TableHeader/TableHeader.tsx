@@ -37,6 +37,7 @@ export function TableHeader<T>() {
               maxWidth: "1000px", // Prevent columns from becoming too narrow
               fontSize: "0.875rem",
               padding: "4px 24px 4px 8px",
+              whiteSpace: "nowrap",
             }}
           >
             <Box
@@ -51,6 +52,7 @@ export function TableHeader<T>() {
                 active={orderBy === column.id}
                 direction={orderBy === column.id ? order : "asc"}
                 onClick={createSortHandler(column.id)}
+                sx={{}}
               >
                 {column.label}
                 {orderBy === column.id ? (

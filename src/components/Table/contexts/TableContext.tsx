@@ -10,7 +10,6 @@ export interface TableState<T> {
   loading: boolean;
   page: number;
   pageSize: number;
-  totalCount: number;
   sortState: {
     orderBy: keyof T | null;
     order: Order;
@@ -30,7 +29,6 @@ export type TableAction<T> =
   | { type: "SET_LOADING"; payload: boolean }
   | { type: "SET_PAGE"; payload: number }
   | { type: "SET_PAGE_SIZE"; payload: number }
-  | { type: "SET_TOTAL_COUNT"; payload: number }
   | { type: "SET_SORT"; payload: { orderBy: keyof T; order: Order } }
   | { type: "SET_FILTER"; payload: { field: keyof T; value: string | number | boolean | string[] } }
   | { type: "CLEAR_ALL_FILTERS" }
@@ -57,7 +55,6 @@ const initialState = {
   loading: false,
   page: 0,
   pageSize: 10,
-  totalCount: 0,
   sortState: {
     orderBy: null,
     order: "asc" as const,
@@ -82,8 +79,6 @@ function tableReducer<T>(state: TableState<T>, action: TableAction<T>): TableSta
       return { ...state, page: action.payload };
     case "SET_PAGE_SIZE":
       return { ...state, pageSize: action.payload };
-    case "SET_TOTAL_COUNT":
-      return { ...state, totalCount: action.payload };
     case "SET_SORT":
       return { ...state, sortState: action.payload };
     case "SET_FILTER":
@@ -155,7 +150,6 @@ export function TableProvider<T>({
     loading,
     page,
     pageSize,
-    totalCount,
     processedData: []
   });
 

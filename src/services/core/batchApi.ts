@@ -67,12 +67,7 @@ export class BatchApiClient {
       console.log("executeBatch", requests);
       const promises = requests.map(async (request) => {
         try {
-          const result = await this.apiClient.request(
-            request.endpoint,
-            request.method,
-            request.data,
-            request.headers
-          );
+          const result = await this.apiClient.request(request.endpoint, request.method, request.data, request.headers);
           request.resolve(result);
         } catch (error: any) {
           request.reject(error);
@@ -93,30 +88,29 @@ export class BatchApiClient {
 
   async flush(): Promise<void> {
     if (this.batch.length > 0) {
-
       await this.executeBatch();
     }
   }
 
   async get<T>(endpoint: string, headers: Record<string, string> = {}): Promise<T | null> {
-      return this.enqueue<T>(endpoint, "GET", undefined, headers);
+    return this.enqueue<T>(endpoint, "GET", undefined, headers);
   }
 
   async post<T>(endpoint: string, data?: any, headers: Record<string, string> = {}): Promise<T | null> {
-      return this.enqueue<T>(endpoint, "POST", data, headers);
+    return this.enqueue<T>(endpoint, "POST", data, headers);
   }
 
   async put<T>(endpoint: string, data?: any, headers: Record<string, string> = {}): Promise<T | null> {
-      return this.enqueue<T>(endpoint, "PUT", data, headers);
+    return this.enqueue<T>(endpoint, "PUT", data, headers);
   }
 
   async delete<T>(endpoint: string, headers: Record<string, string> = {}): Promise<T | null> {
-      return this.enqueue<T>(endpoint, "DELETE", undefined, headers);
+    return this.enqueue<T>(endpoint, "DELETE", undefined, headers);
   }
 
   async patch<T>(endpoint: string, data?: any, headers: Record<string, string> = {}): Promise<T | null> {
-      return this.enqueue<T>(endpoint, "PATCH", data, headers);
+    return this.enqueue<T>(endpoint, "PATCH", data, headers);
   }
 }
 
-export const batchApiClient = new BatchApiClient(apiClient, 5, 100); // Adjust batchSize and autoFlushInterval as needed
+export const batchApiClient = new BatchApiClient(apiClient, 5, 0); // Adjust batchSize and autoFlushInterval as needed

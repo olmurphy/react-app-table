@@ -32,7 +32,7 @@ export function useTableSelection<T>() {
    * @param row - The row data to select/deselect
    */
   const handleSelectOneClick = useCallback(
-    (event: React.MouseEvent<unknown>, row: T) => {
+    (_: React.MouseEvent<unknown>, row: T) => {
       const isSelected = selected.includes(row);
       
       if (isSelected) {

@@ -3,12 +3,12 @@
   color: var(--text);
   display: flex;
   flex-direction: row;
-  height: 100vh;
+  height: 100%;
   width: 100vw;
 
 }
 
 .sidebarContainer {
-  display: "flex";
-  height: "100vh";
+  display: flex;
+  height: 100%;
 }

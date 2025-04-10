@@ -22,7 +22,6 @@ export function CustomTable<T extends Record<string, any>>({
   onExport,
   onSortChange,
   onFilterChange,
-  totalCount,
   pageSize = 10,
   page = 1,
   onPageChange,
@@ -78,13 +77,8 @@ export function CustomTable<T extends Record<string, any>>({
       loading={loading}
       page={page}
       pageSize={pageSize}
-      totalCount={totalCount}
     >
-      <Box
-        sx={{
-          width: "100%"
-        }}
-      >
+      <Box sx={{ height: "100%"}}>
         <TableToolbar tableName={tableName} onActionSelect={handleActionSelect} />
         <Box
           sx={{
